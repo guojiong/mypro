@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>项目管理</title>
+  <!-- DataTables -->
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% block navheader %}
+<section class="content-header">
+	<h1 style="height: 0px">
+	项目管理
+	<small>Control panel</small>
+	</h1>
+	<ol class="breadcrumb">
+		<li><a href="#"><i class="fa fa-dashboard"></i> 项目管理</a></li>
+	</ol>
+</section>
+{% endblock navheader %}
+
+{% block content %}
+<section class="content">
+	<div class="row">
+		<div class="box">
+			<div class="box-header">
+				<form class="form-horizontal">
+					<div class="box-body">
+						<div class="form-group col-sm-4">
+							<label for="project_q" class="col-sm-4 control-label">项目编号：</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="project_q" placeholder="项目编号">
+							</div>
+						</div>
+						<div class="form-group col-sm-4">
+							<label for="inputPassword3" class="col-sm-4 control-label">项目名称：</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="inputPassword3" placeholder="项目名称">
+							</div>
+						</div>
+						<div class="form-group col-sm-3">
+							<button type="button" class="btn btn-default col-sm-5">查询</button>
+							<span class="col-sm-2"></span>
+							<button type="button" class="btn btn-info col-sm-5" onclick="javascript:modal();">新增</button>
+						</div>
+             			</div>
+					<!-- /.box-body -->
+				</form>
+			</div>
+			<div class="box-body" style="height: 100%">
+				<table id="project" class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th class="col-lg-2">序号</th>
+							<th class="col-lg-2">项目编号</th>
+							<th class="col-lg-2">项目名称</th>
+							<th class="col-lg-2">创建时间</th>
+							<th class="col-lg-2">备注</th>
+							<th class="col-lg-2 text-center">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for project in projects %}
+							<tr>
+								<td class="text-green text-bold">{{ forloop.counter }}</td>
+								<td>{{ project.code }}</td>
+								<td>{{ project.name }}</td>
+								<td>{{ project.create_time|date:"Y-m-d H:m:s" }}</td>
+								<td>{% if project.remark %}{{ project.remark }}{% endif %}</td>
+								<td class="text-bold text-center"><a href="javascript:modal('edit',{{project.id}});">编辑</a>&nbsp;&nbsp;&nbsp;<a href="javascript:del({{project.id}});">删除</a></td>
+							</tr>
+							{% empty %}
+							<tr>没有数据！</tr>
+					  	{% endfor %}
+				  	</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="modal-project">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				    <span aria-hidden="true">&times;</span></button>
+				  <h4 class="modal-title">编辑</h4>
+				</div>
+				<div class="modal-body">
+					<!-- form start -->
+					<form class="form-horizontal">
+						<div class="box-body">
+							<div class="form-group">
+						  		{{project_form.code.label_tag}}
+						 		{{project_form.code}}
+							</div>
+							<div class="form-group">
+						  		{{project_form.name.label_tag}}
+								{{project_form.name}}
+							</div>
+							<div class="form-group">
+						  		{{project_form.remark.label_tag}}
+						  		{{project_form.remark}}
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="savebtn">Save changes</button>
+				</div>
+			</div>
+		<!-- /.modal-content -->
+		</div>
+          <!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	
+	
+<div class="modal fade" id="modal-config">
+   <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">操作确认</h4>
+            </div>
+            <div class="modal-body">
+				<i class="Hui-iconfont">&#xe688;</i> 确认删除选中的项？
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="confirmDelete" class="btn bg-red btn-sm ok" data-dismiss="modal">确认</a>
+                <a href="#" class="btn bg-green btn-sm" data-dismiss="modal">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+{% endblock content %}
+
+{% block js %}
+<!-- DataTables -->
+<script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<script>
+	$(function () {
+		$('#project').DataTable({
+		      'paging'      : true,
+		      'lengthChange': false,
+		      'searching'   : false,
+		      'ordering'    : true,
+		      'info'        : true,
+		      'autoWidth'   : false
+		    })
+    })
+    
+    function succFunction(res){
+		if(res.status==200){
+			// 消息框
+			toastr.options.timeOut = 1000;
+			toastr.options.onHidden = function() { window.location.href = "{% url 'project:lists' %}"; }
+			toastr.success(res.msg);
+			return true;
+		}else{
+			toastr.error(res.msg)
+		}
+	}
+	
+	function del(id){
+		$('#modal-config').modal(); 
+		$("#confirmDelete").click(function(){
+			$.ajax({
+				url:"{% url 'project:del'%}",
+				type:'get',
+				data:{
+					'id':id
+				},
+				success:succFunction,
+			});
+			
+        });
+		
+	}
+	
+    function save(id){
+		var code = $('div#modal-project input#code')[0].value;
+		var name = $('div#modal-project input#name')[0].value;
+		var remark = $('div#modal-project textarea#remark')[0].value;
+		$.ajax({
+			url:"{% url 'project:save' %}",
+			type:'POST',
+			data:{
+				csrfmiddlewaretoken:'{{csrf_token}}',
+				'id':id,
+				'code':code,
+				'name':name,
+				'remark':remark,
+			},
+			success:succFunction,
+		});
+	}
+	var id = ''
+	function modal(name, id){
+		id = id;
+		var title = $('div#modal-project h4.modal-title')[0]
+		if(name=='edit'){
+			$.ajax({
+				url:"{% url 'project:query' %}",
+				type:'POST',
+				data:{
+					csrfmiddlewaretoken:'{{ csrf_token }}',
+					'id':id,
+				},
+				success:function(res){
+					var code = $('div#modal-project input#code')[0];
+					var name = $('div#modal-project input#name')[0];
+					var remark = $('div#modal-project textarea#remark')[0];
+					//code.setAttribute('text', res[0].code);
+					title.textContent='编辑';
+					code.value = res[0].code;
+					name.value = res[0].name;
+					if(res[0].remark==null){
+						remark.value = '';
+					}
+					else{
+						remark.value = res[0].remark;
+					}
+				},
+			});
+			$("#modal-project").modal();
+		}else{
+			title.textContent='新增';
+			var l = $('input, textarea');
+			for(i =0; i < l.length; i++){
+				l[i].value=''
+			}
+			$("#modal-project").modal();
+		}
+		
+	}
+	$("#savebtn").click(function(){
+		save(id);				
+    });
+	
+</script>
+{% endblock js %}

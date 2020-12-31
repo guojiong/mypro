@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>采购入库</title>
+  <!-- DataTables -->
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% block navheader %}
+<section class="content-header">
+	<h1 style="height: 0px">
+	采购入库
+	<small>Control panel</small>
+	</h1>
+	<ol class="breadcrumb">
+		<li><a href="#"><i class="fa fa-dashboard"></i> 采购入库</a></li>
+	</ol>
+</section>
+{% endblock navheader %}
+
+{% block content %}
+<section class="content">
+	<div class="row">
+		<div class="box">
+			<div class="box-header">
+				<form class="form-horizontal">
+					<div class="box-body">
+						<div class="form-group col-sm-4">
+							<label for="project_c" class="col-sm-4 control-label">材料编号：</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="project_c" placeholder="项目编号">
+							</div>
+						</div>
+						<div class="form-group col-sm-4">
+							<label for="project_n" class="col-sm-4 control-label">材料名称：</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="project_n" placeholder="项目名称">
+							</div>
+						</div>
+						<div class="form-group col-sm-4">
+							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
+							<span class="col-sm-1"></span>
+							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">重置</button>
+							<span class="col-sm-1"></span>
+							<button type="button" class="btn btn-info col-sm-3" onclick="javascript:modal();">新增</button>
+						</div>
+             			</div>
+					<!-- /.box-body -->
+				</form>
+			</div>
+			<div class="box-body" style="height: 100%">
+				<table id="store_table" class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th style="width: 90px">日期</th>
+							<th class="col-lg-1">出库单号</th>
+							<th class="col-lg-1" style="width: 115px">材料类别 > 小类</th>
+							<!-- <th class="col-lg-1">材料小类</th> -->
+							<th class="col-lg-1">材料名称</th>
+							<th class="col-lg-1" style="width: 115px">品牌/规格/型号</th>
+							<th>数量</th>
+							<th>单位</th>
+							<!-- <th class="col-lg-1">厂家名称</th> -->
+							<th>材料费</th>
+							<!-- <th>单价</th> -->
+							<th>验收员</th>
+							<!-- <th>仓库</th> -->
+							<th class="col-lg-1" >所属项目</th>
+							<th class="col-lg-1" >供应商</th>
+							<!-- <th>备注</th> -->
+							<!-- <th class="col-lg-1 text-center">操作</th> -->
+						</tr>
+					</thead>
+					<tbody>
+						{% for store in stores %}
+							<tr>
+								<td class="text-green text-bold">{{ store.date|date:"Y-m-d" }}</td>
+								<td>{{ store.receiptNo }}</td>
+								<td>{{ store.mtype }} > {{ store.mclass }}</td>
+								<!-- <td>{{ store.mclass }}</td> -->
+								<td>{{ store.mname }}</td>
+								<td>{{ store.specifi }}</td>
+								<td>{{ store.num }}</td>
+								<td>{% if store.unit %}{{ store.unit }}{% endif %}</td>
+								<!-- <td>{% if store.factory %}{{ store.factory }}{% endif %}</td> -->
+								<td>{{ store.materialfee }}</td>
+								<!-- <td>{{ store.price }}</td> -->
+								<td>{{ store.inspector }}</td>
+								<!-- <td>{% if store.storeloc %}{{ store.storeloc }}{% endif %}</td> -->
+								<td>{{ store.project.name }}</td>
+								<td>{{ store.provider }}</td>
+								<!-- <td>{% if store.remark %}{{ store.remark }}{% endif %}</td> -->
+								<td class="text-bold text-center">
+								<!-- <a href="javascript:modal('edit',{{store.id}})">编辑</a>&nbsp;&nbsp;&nbsp; -->
+							</tr>
+							{% empty %}
+							<tr>没有数据！</tr>
+					  	{% endfor %}
+				  	</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="modal-store" >
+		<div class="modal-dialog" style="width: 78%">
+			<div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				    <span aria-hidden="true">&times;</span></button>
+				  <h4 class="modal-title">编辑</h4>
+				</div>
+				<div class="modal-body">
+					<!-- form start -->
+					{% load mytags %}
+					<form class="form-horizontal">
+						<div class="box-body">
+							<input type="text" id="storeid" value="{{ store.id }}" hidden>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{ store_form.date|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.date}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.receiptNo |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.receiptNo}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{ store_form.mtype|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.mtype}}
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{store_form.mclass |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.mclass}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{ store_form.mname|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.mname}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.specifi |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.specifi}}
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.num}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.unit |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.unit}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.materialfee |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.materialfee}}
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{ store_form.price|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.price}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.rate|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.rate}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.inspector |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.inspector}}
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{store_form.buyer |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.buyer}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.storeloc |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.storeloc}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.project |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.project}}
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{store_form.provider |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.provider}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.factory |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.factory}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.remark |label_with_classes:'col-lg-5 control-label'}}
+							  		{{store_form.remark}}
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="savebtn">Save changes</button>
+				</div>
+			</div>
+		<!-- /.modal-content -->
+		</div>
+          <!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	
+	
+<div class="modal fade" id="modal-config">
+   <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">操作确认</h4>
+            </div>
+            <div class="modal-body">
+				<i class="Hui-iconfont">&#xe688;</i> 确认删除选中的项？
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="confirmDelete" class="btn bg-red btn-sm ok" data-dismiss="modal">确认</a>
+                <a href="#" class="btn bg-green btn-sm" data-dismiss="modal">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+{% endblock content %}
+
+{% block js %}
+<!-- DataTables -->
+<script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<script>
+	$(function () {
+		$('#store_table').DataTable({
+		      'paging'      : true,
+		      'lengthChange': false,
+		      'searching'   : false,
+		      'ordering'    : true,
+		      'info'        : true,
+		      'autoWidth'   : false,
+		    })
+    })
+    function trim(str){   
+    	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
+	}
+    function query(){
+		var code = trim($('input#project_c')[0].value);
+		var name = trim($('input#project_n')[0].value);
+		data = {csrfmiddlewaretoken:'{{csrf_token}}',}
+		if (code!=''){
+			data['code']=code;
+		}
+		if (name!=''){
+			data['name']=name;
+		}
+		$.ajax({
+			url:"{% url 'project:query' %}",
+			type:'POST',
+			async : false, 
+			data:data,
+			success: function (data) {
+				$('tbody').html(data);
+ 			},
+		});
+	}
+    
+    function succFunction(res){
+		if(res.status==200){
+			// 消息框
+			toastr.options.timeOut = 1000;
+			toastr.options.onHidden = function() { window.location.href = "{% url 'project:lists' %}"; }
+			toastr.success(res.msg);
+			return true;
+		}else{
+			toastr.error(res.msg)
+		}
+	}
+	
+	function del(id){
+		$('#modal-config').modal(); 
+		$("#confirmDelete").click(function(){
+			$.ajax({
+				url:"{% url 'project:del'%}",
+				type:'get',
+				async : false, 
+				data:{
+					'id':id
+				},
+				success:succFunction,
+			});
+			
+        });
+		
+	}
+	
+    function save(id){
+    	var date = $('div#modal-store input#date')[0].value;
+    	var receiptNo = $('div#modal-store input#receiptNo')[0].value;
+    	var mtype = $('div#modal-store input#mtype')[0].value;
+    	var mclass = $('div#modal-store input#mclass')[0].value;
+    	var mname = $('div#modal-store input#mname')[0].value;
+    	var specifi = $('div#modal-store input#specifi')[0].value;
+    	var num = $('div#modal-store input#num')[0].value;
+    	var unit = $('div#modal-store input#unit')[0].value;
+    	var rate = $('div#modal-store input#rate')[0].value;
+    	var factory = $('div#modal-store input#factory')[0].value;
+    	var materialfee = $('div#modal-store input#materialfee')[0].value;
+    	var price = $('div#modal-store input#price')[0].value;
+    	var buyer = $('div#modal-store input#buyer')[0].value;
+    	var inspector = $('div#modal-store input#inspector')[0].value;
+    	var storeloc = $('div#modal-store input#storeloc')[0].value;
+    	var project = $('div#modal-store input#project')[0].value;
+    	var provider = $('div#modal-store input#provider')[0].value;
+    	var remark = $('div#modal-store textarea#remark')[0].value;
+		$.ajax({
+			url:"{% url 'store:save' %}",
+			type:'POST',
+			async : false, 
+			data:{
+				csrfmiddlewaretoken:'{{csrf_token}}',
+				'id':id,
+				'date':date,
+				'receiptNo':receiptNo,
+				'mtype':mtype,
+				'mclass':mclass,
+				'mname':mname,
+				'specifi':specifi,
+				'num':num,
+				'unit':unit,
+				'rate':rate,
+				'factory':factory,
+				'materialfee':materialfee,
+				'price':price,
+				'buyer':buyer,
+				'inspector':inspector,
+				'storeloc':storeloc,
+				'project':project,
+				'provider':provider,
+				'remark':remark,
+			},
+			success:succFunction,
+		});
+	}
+
+    function modal(name, id){
+		id = id;
+		var title = $('div#modal-store h4.modal-title')[0]
+		if(name=='edit'){
+			$.ajax({
+				url:"{% url 'project:query' %}",
+				type:'POST',
+				async : false, 
+				data:{
+					csrfmiddlewaretoken:'{{ csrf_token }}',
+					'id':id,
+				},
+				success:function(res){
+					var ids = $('div#modal-store input#storeid')[0]
+					var code = $('div#modal-store input#code')[0];
+					var name = $('div#modal-store input#name')[0];
+					var remark = $('div#modal-store textarea#remark')[0];
+					//code.setAttribute('text', res[0].code);
+					title.textContent='编辑';
+					ids.value = id;
+					code.value = res[0].code;
+					name.value = res[0].name;
+					if(res[0].remark==null){
+						remark.value = '';
+					}
+					else{
+						remark.value = res[0].remark;
+					}
+				},
+			});
+			$("#modal-store").modal();
+		}else{
+			title.textContent='新增';
+			var l = $('input, textarea');
+			for(i =0; i < l.length; i++){
+				l[i].value=''
+			}
+			$("#modal-store").modal();
+		}
+		
+	}
+	$("#savebtn").click(function(){
+		id = $('div#modal-store input#storeid')[0].value;
+		save(id);				
+    });
+	
+	
+</script>
+{% endblock js %}

@@ -1,0 +1,326 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  {% block title %}
+  <title>运维管理系统</title>
+  {% endblock title %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<!-- Site wrapper -->
+<div class="wrapper">
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light border-bottom">
+    <!-- Left navbar links -->
+    </ul>
+
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+	
+	<!--退出窗口-->
+	<div id="modal-login" class="iziModal">
+	</div>
+	
+	<!--修改密码窗口-->
+	<div id="modal-changepasswd" class="iziModal">
+		<form role="form" method="POST" onsubmit="changepasswd(this);return false;">
+			{% csrf_token %}
+	  </form>
+	</div>
+	
+	<!--个人信息弹出框-->
+	<div id="modal-userinfo-container">
+	</div>
+	
+	
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+		  <li class="nav-header">导航栏</li>
+		  {% block leftnav %}
+		  {% endblock leftnav %}
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+	{% block navheader %}
+	{% endblock navheader %}
+
+    <!-- Main content -->
+    <section class="content">
+	
+	{% block content %}
+	
+	{% endblock content %}
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      运维管理系统 <b>Version</b> 1.0.0
+    </div>
+    <strong>Copyright &copy; 2020 <a href="#" target="_blank">gm</a>.</strong> All rights
+    reserved.
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{% static 'adminlte/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static 'adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- FastClick -->
+<script src="{% static 'adminlte/plugins/fastclick/fastclick.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'adminlte/dist/js/adminlte.min.js' %}"></script>
+
+<!-- Toastr -->
+<script src="{% static 'adminlte/plugins/toastr/toastr.min.js' %}"></script>
+
+<!-- 弹出框插件 -->
+<script src="{% static 'js/iziModal.min.js' %}"></script>
+<script>
+	function GetDate(format) {
+		 /**
+		 * format=1表示获取年月日
+		 * format=0表示获取年月日时分秒
+		 * **/
+		 var now = new Date();
+		 var year = now.getFullYear();
+		 var month = now.getMonth()+1;
+		 if (month < 10) {
+			month = "0" + month
+		 }
+		 var date = now.getDate();
+		 if (date < 10) {
+			date = "0" + date
+		 }
+		 
+		 var day = now.getDay();//得到周几
+		 var hour = now.getHours();//得到小时
+		 if (hour < 10) {
+			hour = "0" + hour
+		 }
+		 var minu = now.getMinutes();//得到分钟
+		 if (minu < 10) {
+			minu = "0" + minu
+		 }
+		 var sec = now.getSeconds();//得到秒
+		 if (sec < 10) {
+			sec = "0" + sec
+		 }
+		 
+		 if (format==1){
+			 _time = year+"/"+month+"/"+date
+		}
+		else if (format==2){
+			_time = year+"/"+month+"/"+date+" "+hour+":"+minu+":"+sec
+		}
+		return _time
+	}
+
+
+	$("#modal-login").iziModal({
+		//title: "退出",
+		//subtitle: "确认退出",
+		iconClass: 'icon-announcement',
+		width: 400,
+		padding: 10,
+	});
+	$(document).on('click', '.logout', function (event) {
+		event.preventDefault();
+		$('#modal-login').iziModal('open');
+	});
+	
+	
+	$("#modal-changepasswd").iziModal({
+		iconClass: 'icon-announcement',
+		//width: 400,
+		padding: 10,
+		overlayClose: false,	// 是否允许点击模态窗口的外部来关闭模态窗口。
+		closeOnEscape: false, 	// 是否允许通过点击ESC键来关闭模态窗口。
+	});
+	$(document).on('click', '.changepasswd', function (event) {
+		event.preventDefault();
+		$('#modal-changepasswd').iziModal('open');
+	});
+	
+	// 修改密码
+	changepasswd = function(event) {
+		toastr.options.closeButton = true;
+		toastr.options.showMethod = 'slideDown';
+		toastr.options.hideMethod = 'fadeOut';
+		toastr.options.closeMethod = 'fadeOut';
+		toastr.options.timeOut = 4000;	
+		toastr.options.extendedTimeOut = 0;	
+		
+		var thisObj = $(event);	//js对象转jquery对象
+		var oldpasswd = $(thisObj.find("input[name='oldpasswd']")[0]).val();
+		var newpasswd = $(thisObj.find("input[name='newpasswd']")[0]).val();
+		var newpasswdagain = $(thisObj.find("input[name='newpasswdagain']")[0]).val();
+		csrfmiddlewaretoken = '{{ request.COOKIES.csrftoken }}';
+		
+		$.ajax({
+			url: "/xx",
+			async: true,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				'csrfmiddlewaretoken': csrfmiddlewaretoken,
+				'oldpasswd': oldpasswd,
+				'newpasswd': newpasswd,
+				'newpasswdagain': newpasswdagain,
+			},
+			timeout: 10000,
+			cache: true,
+			beforeSend: LoadFunction, //加载执行方法
+			error: errFunction,  //错误执行方法
+			success: succFunction, //成功执行方法
+		});
+		
+		function LoadFunction() {
+			//$("#aboutcontent").html('删除中...');
+			//alert('删除中');
+		};
+		
+		function errFunction() {
+			// 消息框
+			toastr.error('修改密码错误');
+		};
+		
+		function succFunction(res) {
+			if (res.code != 200) {
+				// 消息框
+				toastr.error('修改密码错误: ' + res.err);
+			} else {
+
+
+				// 消息框
+				toastr.success('修改密码成功, 下次登录生效');
+			}
+		};
+		
+		// 关闭弹出框
+		$("#modal-changepasswd").iziModal('close');
+		$(thisObj.find("input[name='oldpasswd']")[0]).val('');
+		$(thisObj.find("input[name='newpasswd']")[0]).val('');
+		$(thisObj.find("input[name='newpasswdagain']")[0]).val('');
+		return false;
+	}
+	
+	
+	getuserinfo = function () {
+		$("#modal-userinfo-container").html('');
+		$.ajax({
+			url: '/xx',
+			async: false,	// false 才能保证重新获取的验证码有效
+			type: 'GET',
+			dataType: 'json',
+			timeout: 10000,
+			cache: true,
+			beforeSend: LoadFunction, //加载执行方法
+			error: errFunction,  //错误执行方法
+			success: succFunction //成功执行方法
+		});
+
+		function LoadFunction() {
+			$("#modal-userinfo-container").html('<div id="modal-userinfo" class="iziModal"><div class="row"><h4 class="m-auto">获取中...</h4></div></div>');
+		};
+
+		function errFunction() {
+			$("#modal-userinfo-container").html('<div id="modal-userinfo" class="iziModal"><div class="row"><h4 class="m-auto">获取错误</h4></div></div>');
+		};
+
+		function succFunction(res) {
+			if (res.code != 200) {
+				$("#modal-userinfo-container").html('<div id="modal-userinfo" class="iziModal"><div class="row"><h4 class="m-auto">获取错误</h4></div></div>');
+			} else {
+				var userid = res.user.id
+				var username = res.user.username
+				var nickname = res.user.nickname
+				var email = res.user.email
+				var sex = res.user.sex
+				if (sex == 'male') {
+					sex = '男';
+				} else if (sex == 'female') {
+					sex = '女';
+				} else {
+					sex = '其他';
+				}
+
+				var status = res.user.status
+				if (status == 0) {
+					status = '启用';
+				} else if (status == 1) {
+					status = '禁用';
+				} else {
+					status = '其他';
+				}
+				var create_time = res.user.create_time
+				$("#modal-userinfo-container").html('<div id="modal-userinfo" class="iziModal"><div class="row p-4">\
+													 <div class="col-12 mb-2"><h4><strong>个人信息</strong></h4></div>\
+													 <div class="col-4 mb-1 border-bottom">用户ID: </div><div class="col-8 mb-1 border-bottom">' + userid + '</div>\
+													 <div class="col-4 mb-1 border-bottom">用户名: </div><div class="col-8 mb-1 border-bottom">' + username + '</div>\
+													 <div class="col-4 mb-1 border-bottom">用户昵称: </div><div class="col-8 mb-1 border-bottom">' + nickname + '</div>\
+													 <div class="col-4 mb-1 border-bottom">用户邮箱: </div><div class="col-8 mb-1 border-bottom">' + email + '</div>\
+													 <div class="col-4 mb-1 border-bottom">用户性别: </div><div class="col-8 mb-1 border-bottom">' + sex + '</div>\
+													 <div class="col-4 mb-1 border-bottom">用户状态: </div><div class="col-8 mb-1 border-bottom">' + status + '</div>\
+													 <div class="col-4 mb-1 border-bottom">用户创建时间: </div><div class="col-8 mb-1 border-bottom">' + create_time + '</div>\
+													 <div class="col-12 mt-3"><button type="button" class="btn btn-block btn-success btn-flat" data-iziModal-close>返回</button></div>\
+													 </div></div>');
+			}
+		};
+
+		// 初始化弹出框
+		$("#modal-userinfo").iziModal({
+			iconClass: 'icon-announcement',
+			//width: 450,
+			//padding: 10,
+			overlayClose: true,	// 是否允许点击模态窗口的外部来关闭模态窗口。
+			closeOnEscape: true, 	// 是否允许通过点击ESC键来关闭模态窗口。
+		});
+				
+		// 打开弹出框
+		$('#modal-userinfo').iziModal('open');
+	}
+	
+</script>
+		
+{% block js %}
+
+{% endblock js %}
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% for store in stores %}
+	<tr>
+		<!-- <td class="text-green text-bold">{{ store.date|date:"Y-m-d" }}</td>
+		<td>{{ store.receiptNo }}</td> -->
+		<td>{{ store.project.name }}</td>
+		<td>{{ store.provider }}</td>
+		<td>{{ store.mtype }}</td>
+		<td>{{ store.mclass }}</td>
+		<td>{{ store.mname }}</td>
+		<td>{{ store.specifi }}</td>
+		<td>{{ store.num }}</td>
+		<!-- <td>{% if store.unit %}{{ store.unit }}{% endif %}</td>
+		<td>{% if store.factory %}{{ store.factory }}{% endif %}</td> -->
+		<!-- <td>{{ store.materialfee }}</td> -->
+		<!-- <td>{{ store.price }}</td> -->
+		<!-- <td>{{ store.inspector }}</td> -->
+		<!-- <td>{% if store.storeloc %}{{ store.storeloc }}{% endif %}</td> -->
+		<td>{% if store.remark %}{{ store.remark }}{% endif %}</td>
+		<td class="text-bold text-center">
+		<a href="javascript:modal({{store}})">查看入库单</a>&nbsp;&nbsp;&nbsp;
+	</tr>
+	{% empty %}
+	<tr>没有数据！</tr>
+{% endfor %}

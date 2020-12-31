@@ -1,0 +1,14 @@
+{% for project in projects %}
+	<tr>
+		<td class="text-green text-bold">{{ forloop.counter }}</td>
+		<td>{{ project.code }}</td>
+		<td>{{ project.name }}</td>
+		<td>{{ project.create_time|date:"Y-m-d H:m:s" }}</td>
+		<td>{% if project.remark %}{{ project.remark }}{% endif %}</td>
+		<td class="text-bold text-center">
+		<a href="javascript:modal('edit',{{project.id}})">编辑</a>&nbsp;&nbsp;&nbsp;
+		<a href="javascript:del({{project.id}});">删除</a></td>
+	</tr>
+	{% empty %}
+	<tr>没有数据！</tr>
+{% endfor %}
