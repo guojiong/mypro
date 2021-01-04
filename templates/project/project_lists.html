@@ -40,7 +40,7 @@
 						<div class="form-group col-sm-4">
 							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
 							<span class="col-sm-1"></span>
-							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:void(0);">重置</button>
+							<button type="reset" class="btn btn-default col-sm-3">重置</button>
 							<span class="col-sm-1"></span>
 							<button type="button" class="btn btn-info col-sm-3" onclick="javascript:modal();">新增</button>
 						</div>
@@ -149,16 +149,14 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
-	$(function () {
-		$('#project').DataTable({
-		      'paging'      : true,
-		      'lengthChange': false,
-		      'searching'   : false,
-		      'ordering'    : true,
-		      'info'        : true,
-		      'autoWidth'   : false
-		    })
-    })
+var ptable = $('#project').DataTable({
+'paging'      : true,
+'lengthChange': false,
+'searching'   : false,
+'ordering'    : true,
+'info'        : true,
+'autoWidth'   : false
+})
     function trim(str){   
     	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
 	}

@@ -14,5 +14,7 @@ urlpatterns = [
     path('query/',views.project_query, name='query'),
     path('del/',views.project_del, name='del'),
     path('save/',views.project_save, name='save'),
+    
     path('test/',views.test, name='test'),
+    path('data/', views.datatable, name='data'),
     ]

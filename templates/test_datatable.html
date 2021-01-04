@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Important</title>
+  <!-- DataTables -->
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% block navheader %}
+<section class="content-header">
+	<h1 style="height: 0px">
+	Important
+	<small>Control panel</small>
+	</h1>
+	<ol class="breadcrumb">
+		<li><a href="#"><i class="fa fa-dashboard"></i> Important</a></li>
+	</ol>
+</section>
+{% endblock navheader %}
+
+{% block content %}
+<section class="content">
+	<div class="box box-primary">
+        <div class="box-header">
+            <h3 class="box-title">表格大标题</h3>
+            <button type="button" id="qbtn">查询</button>
+            <input id="code" type="text">
+            <input id="name" type="text">
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr class="text-center">
+                    <th class="text-center">列标题1</th>
+                    <th class="text-center">列标题2</th>
+                    <th class="text-center">列标题1</th>
+                    <th class="text-center">列标题2</th>
+                </tr>
+                </thead>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+        <!-- /.box-body -->
+    </div>
+	
+</section>
+
+{% endblock content %}
+
+{% block js %}
+<!-- DataTables -->
+<script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+<script>
+function trim(str){   
+	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
+}
+function sdata(){
+	var code = trim($('input#code').val());
+	var name = trim($('input#name').val());
+	data = {csrfmiddlewaretoken:'{{csrf_token}}',}
+	if (code!=''){
+		data['code']=code;
+	}
+	if (name!=''){
+		data['name']=name;
+	}
+	return data;
+}
+var table = $('#example1').DataTable({
+		ajax:{
+			url:'{% url "project:data" %}',
+			type:'POST',
+			data:function(){
+				e=sdata();
+				return e;
+			},
+			dataSrc: ''
+		},
+	    columns: [
+	        { data: 'name' },
+	        { data: 'code' },
+	        { data: 'create_time' },
+	        { data: 'remark' },
+	    ]
+});
+
+$('#qbtn').click(function(){
+	table.ajax.reload();
+	/* table.on('draw', function(){
+		ajax({
+			url:'{% url "project:data" %}',
+			data:{'code':code}
+		});
+	}) */
+});
+/* qbtnaction = $("#qbtn").click(function(){
+	
+	$('#example1').DataTable( {
+		
+		ajax: {
+			url:'{% url "project:data" %}',
+			dataSrc: ''
+		},
+		 //data:data,
+	    columns: [
+	        { data: 'name' },
+	        { data: 'code' },
+	        { data: 'create_time' },
+	        { data: 'remark' },
+	    ]
+	});
+}); */
+</script>
+{% endblock js %}

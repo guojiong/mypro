@@ -40,7 +40,7 @@
 						<div class="form-group col-sm-4">
 							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
 							<span class="col-sm-1"></span>
-							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:void(0);">重置</button>
+							<button type="reset" class="btn btn-default col-sm-3">重置</button>
 							<span class="col-sm-1"></span>
 							<button type="button" class="btn btn-info col-sm-3" onclick="javascript:modal();">新增</button>
 						</div>
@@ -158,30 +158,32 @@
 		      'paging'      : true,
 		      'lengthChange': false,
 		      'searching'   : false,
-		      'ordering'    : false,
+		      'ordering'    : true,
 		      'info'        : true,
-		      'autoWidth'   : false
+		      'autoWidth'   : false,
 		    })
-    })
+    });
+    
     function trim(str){   
     	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
 	}
+	
     function query(){
 		var mtype = trim($('input#mclass_type')[0].value);
 		var mclass = trim($('input#mclass_class')[0].value);
 		data = {csrfmiddlewaretoken:'{{csrf_token}}',}
 		if (mtype!=''){
-			data['mtype']=mtype;
+			data['m_type']=mtype;
 		}
 		if (mclass!=''){
-			data['mclass']=mclass;
+			data['m_class']=mclass;
 		}
 		$.ajax({
-			url:"{% url 'project:query' %}",
+			url:"{% url 'mclass:query' %}",
 			type:'POST',
 			data:data,
 			success: function (data) {
-				$('tbody').html(data);
+				$('#mclass').find("tbody").html(data);
  			},
 		});
 	}

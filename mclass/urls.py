@@ -13,4 +13,5 @@ urlpatterns = [
         path('save/', views.mclass_save, name='save'),
         path('query/', views.mclass_query, name='query'),
         path('del/', views.mclass_del, name='del'),
+        
     ]

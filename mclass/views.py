@@ -49,7 +49,20 @@ def mclass_query(request):
         }
         mclassJson.append(data)
         return JsonResponse(mclassJson, safe=False)
-    return
+    else:
+        objmclass = Mclass.objects
+        m_type = request.POST.get('m_type')
+        m_class = request.POST.get('m_class')
+        mclasses = ''
+        if m_type:
+            objmclass.filter(mtype=m_type)
+            if m_class and mclasses:
+                mclasses = mclasses.filter(mclass__contains=m_class)
+        elif m_class:
+            mclasses = objmclass.filter(mclass__contains=m_class)
+        else:
+            mclasses = objmclass.all()
+    return render(request, 'mclass/mclass_table_template.html', locals()) 
 
 def mclass_del(request):
     mclass_id = request.GET.get('id')

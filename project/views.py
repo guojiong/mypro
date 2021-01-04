@@ -78,6 +78,16 @@ def project_del(request):
         return JsonResponse({'status':500, 'msg':'删除失败'})
     return JsonResponse({'status':200, 'msg':'删除成功'})
 
+def datatable(request):
+    code = request.POST.get('code')
+    name = request.POST.get('name')
+    if name:
+        projects =Project.objects.values().filter(name__contains=name)
+    else:
+        projects = Project.objects.values().all()
+    projects_list = list(projects)
+    return JsonResponse(projects_list, safe=False)
+
 def test(request):
-    return render(request, 'index.html')
+    return render(request, 'test_datatable.html')
 

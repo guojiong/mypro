@@ -1,0 +1,14 @@
+{% for mclass in mclasses %}
+	<tr>
+		<td class="text-green text-bold">{{ forloop.counter }}</td>
+		<td>{{ mclass.mtype }}</td>
+		<td>{{ mclass.mclass }}</td>
+		<td>{% if mclass.content %}{{ mclass.content }}{% endif %}</td>
+		<td>{% if mclass.remark %}{{ mclass.remark }}{% endif %}</td>
+		<td class="text-bold text-center">
+		<a href="javascript:modal('edit',{{mclass.id}})">编辑</a>&nbsp;&nbsp;&nbsp;
+		<a href="javascript:del({{mclass.id}});">删除</a></td>
+	</tr>
+	{% empty %}
+	<tr>没有数据！</tr>
+{% endfor %}
