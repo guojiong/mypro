@@ -38,7 +38,7 @@
 							</div>
 						</div>
 						<div class="form-group col-sm-4">
-							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
+							<button id="q_btn" type="button" class="btn btn-default col-sm-3">查询</button>
 							<span class="col-sm-1"></span>
 							<button type="reset" class="btn btn-default col-sm-3">重置</button>
 							<span class="col-sm-1"></span>
@@ -52,35 +52,20 @@
 				<table id="project" class="table table-bordered table-hover">
 					<thead>
 						<tr>
-							<th class="col-lg-2">序号</th>
+							<th class="col-lg-1">序号</th>
 							<th class="col-lg-2">项目编号</th>
 							<th class="col-lg-2">项目名称</th>
 							<th class="col-lg-2">创建时间</th>
 							<th class="col-lg-2">备注</th>
 							<th class="col-lg-2 text-center">操作</th>
+                            <th class="col-lg-2">ids</th>
 						</tr>
 					</thead>
-					<tbody>
-						{% for project in projects %}
-							<tr>
-								<td class="text-green text-bold">{{ forloop.counter }}</td>
-								<td>{{ project.code }}</td>
-								<td>{{ project.name }}</td>
-								<td>{{ project.create_time|date:"Y-m-d H:m:s" }}</td>
-								<td>{% if project.remark %}{{ project.remark }}{% endif %}</td>
-								<td class="text-bold text-center">
-								<a href="javascript:modal('edit',{{project.id}})">编辑</a>&nbsp;&nbsp;&nbsp;
-								<a href="javascript:del({{project.id}});">删除</a></td>
-							</tr>
-							{% empty %}
-							<tr>没有数据！</tr>
-					  	{% endfor %}
-				  	</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="modal fade" id="modal-project">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -119,8 +104,8 @@
           <!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
-	
-	
+
+
 <div class="modal fade" id="modal-config">
    <div class="modal-dialog">
         <div class="modal-content">
@@ -149,37 +134,59 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
-var ptable = $('#project').DataTable({
-'paging'      : true,
-'lengthChange': false,
-'searching'   : false,
-'ordering'    : true,
-'info'        : true,
-'autoWidth'   : false
-})
-    function trim(str){   
-    	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
-	}
-    function query(){
-		var code = trim($('input#project_c')[0].value);
-		var name = trim($('input#project_n')[0].value);
-		data = {csrfmiddlewaretoken:'{{csrf_token}}',}
-		if (code!=''){
-			data['code']=code;
-		}
-		if (name!=''){
-			data['name']=name;
-		}
-		$.ajax({
-			url:"{% url 'project:query' %}",
+    function trim(str){
+        return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');
+    }
+    function sdata(){
+        var code = trim($('input#project_c').val());
+        var name = trim($('input#project_n').val());
+        data = {csrfmiddlewaretoken:'{{csrf_token}}',}
+        if (code!=''){
+            data['code']=code;
+        }
+        if (name!=''){
+            data['name']=name;
+        }
+        return data;
+    }
+    var ptable = $('#project').DataTable({
+		ajax:{
+			url:'{% url "project:data" %}',
 			type:'POST',
-			data:data,
-			success: function (data) {
-				$('tbody').html(data);
- 			},
-		});
-	}
-    
+			data:function(){
+				e=sdata();
+				return e;
+			},
+			dataSrc: ''
+		},
+	    columns: [
+	        { data: null },
+	        { data: 'name' },
+	        { data: 'code' },
+	        { data: 'create_time' },
+	        { data: 'remark' },
+	        { data: null, render: function(data, type, row) {
+	            id=data['id']
+                return '<button class="btn btn-sm btn-primary btn-edit" onclick="javascript:modal(\'edit\','+ id +');">编辑</button>'+'&nbsp;&nbsp;<button class="btn btn-sm btn-warning" onclick="javascript:setBan('+ id +');">删除</button>';
+            }},
+	        {
+	            data: 'id',
+                visible: false
+            },
+	    ],
+
+    });
+
+    ptable.on('order.dt', function () {
+        ptable.column(0, {order:'applied'}).nodes().each(function (cell, i) {
+            cell.innerHTML = i+1
+        }).draw();
+    });
+
+    $('#q_btn').click(function(){
+        ptable.ajax.reload();
+    });
+
     function succFunction(res){
 		if(res.status==200){
 			// 消息框

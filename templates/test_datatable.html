@@ -2,49 +2,129 @@
 {% load static %}
 
 {% block title %}
-<title>Important</title>
+<title>项目管理</title>
   <!-- DataTables -->
 {% endblock title %}
 <link rel="stylesheet" href="{% static 'AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
 {% block navheader %}
 <section class="content-header">
 	<h1 style="height: 0px">
-	Important
+	项目管理
 	<small>Control panel</small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> Important</a></li>
+		<li><a href="#"><i class="fa fa-dashboard"></i> 项目管理</a></li>
 	</ol>
 </section>
 {% endblock navheader %}
 
 {% block content %}
 <section class="content">
-	<div class="box box-primary">
-        <div class="box-header">
-            <h3 class="box-title">表格大标题</h3>
-            <button type="button" id="qbtn">查询</button>
-            <input id="code" type="text">
-            <input id="name" type="text">
+	<div class="row">
+		<div class="box">
+			<div class="box-header">
+				<form class="form-horizontal">
+					<div class="box-body">
+						<div class="form-group col-sm-4">
+							<label for="project_c" class="col-sm-4 control-label">项目编号：</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="project_c" placeholder="项目编号">
+							</div>
+						</div>
+						<div class="form-group col-sm-4">
+							<label for="project_n" class="col-sm-4 control-label">项目名称：</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="project_n" placeholder="项目名称">
+							</div>
+						</div>
+						<div class="form-group col-sm-4">
+							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
+							<span class="col-sm-1"></span>
+							<button type="reset" class="btn btn-default col-sm-3">重置</button>
+							<span class="col-sm-1"></span>
+							<button type="button" class="btn btn-info col-sm-3" onclick="javascript:modal();">新增</button>
+						</div>
+             			</div>
+					<!-- /.box-body -->
+				</form>
+			</div>
+			<div class="box-body" style="height: 100%">
+				<table id="project" class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th class="col-lg-1">序号</th>
+							<th class="col-lg-2">项目编号</th>
+							<th class="col-lg-2">项目名称</th>
+							<th class="col-lg-2">创建时间</th>
+							<th class="col-lg-2">备注</th>
+							<th class="col-lg-2 text-center">操作</th>
+                            <th class="col-lg-2">ids</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-project">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				    <span aria-hidden="true">&times;</span></button>
+				  <h4 class="modal-title">编辑</h4>
+				</div>
+				<div class="modal-body">
+					<!-- form start -->
+					<form class="form-horizontal">
+						<div class="box-body">
+							<input type="text" id="projectid" value="{{ project.id }}" hidden>
+							<div class="form-group">
+						  		{{project_form.code.label_tag}}
+						 		{{project_form.code}}
+							</div>
+							<div class="form-group">
+						  		{{project_form.name.label_tag}}
+								{{project_form.name}}
+							</div>
+							<div class="form-group">
+						  		{{project_form.remark.label_tag}}
+						  		{{project_form.remark}}
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="savebtn">Save changes</button>
+				</div>
+			</div>
+		<!-- /.modal-content -->
+		</div>
+          <!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+
+
+<div class="modal fade" id="modal-config">
+   <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">操作确认</h4>
+            </div>
+            <div class="modal-body">
+				<i class="Hui-iconfont">&#xe688;</i> 确认删除选中的项？
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="confirmDelete" class="btn bg-red btn-sm ok" data-dismiss="modal">确认</a>
+                <a href="#" class="btn bg-green btn-sm" data-dismiss="modal">取消</a>
+            </div>
         </div>
-        <!-- /.box-header -->
-        <div class="box-body">
-            <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr class="text-center">
-                    <th class="text-center">列标题1</th>
-                    <th class="text-center">列标题2</th>
-                    <th class="text-center">列标题1</th>
-                    <th class="text-center">列标题2</th>
-                </tr>
-                </thead>
-                <tfoot>
-                </tfoot>
-            </table>
-        </div>
-        <!-- /.box-body -->
     </div>
-	
+</div>
 </section>
 
 {% endblock content %}
@@ -58,8 +138,8 @@ function trim(str){
 	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
 }
 function sdata(){
-	var code = trim($('input#code').val());
-	var name = trim($('input#name').val());
+	var code = trim($('input#project_c').val());
+	var name = trim($('input#project_n').val());
 	data = {csrfmiddlewaretoken:'{{csrf_token}}',}
 	if (code!=''){
 		data['code']=code;
@@ -69,7 +149,7 @@ function sdata(){
 	}
 	return data;
 }
-var table = $('#example1').DataTable({
+var ptable = $('#project').DataTable({
 		ajax:{
 			url:'{% url "project:data" %}',
 			type:'POST',
@@ -80,21 +160,31 @@ var table = $('#example1').DataTable({
 			dataSrc: ''
 		},
 	    columns: [
+	        { data: null },
 	        { data: 'name' },
 	        { data: 'code' },
 	        { data: 'create_time' },
 	        { data: 'remark' },
-	    ]
+	        { data: null, render: function(data, type, row) {
+	            id=data['id']
+                return '<button class="btn btn-sm btn-primary btn-edit" onclick="javascript:startEdit('+ id +');">编辑</button>'+'&nbsp;&nbsp;<button class="btn btn-sm '+(data[1]==1?'btn-info':'btn-warning')+'" onclick="javascript:setBan('+ id +');">删除</button>';
+            }},
+	        {
+	            data: 'id',
+                visible: false
+            },
+	    ],
+
+});
+
+ptable.on('order.dt', function () {
+    ptable.column(0, {order:'applied'}).nodes().each(function (cell, i) {
+        cell.innerHTML = i+1
+    }).draw();
 });
 
 $('#qbtn').click(function(){
-	table.ajax.reload();
-	/* table.on('draw', function(){
-		ajax({
-			url:'{% url "project:data" %}',
-			data:{'code':code}
-		});
-	}) */
+	ptable.ajax.reload();
 });
 /* qbtnaction = $("#qbtn").click(function(){
 	

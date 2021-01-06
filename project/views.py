@@ -38,35 +38,15 @@ def project_save(request):
             return JsonResponse({'status':'200', 'msg':'新增成功'})
     return JsonResponse({'status':'500', 'msg':form_add._errors})
 
+
 def project_query(request):
     project_id = request.POST.get('id')
-    projectsJson = []
+    projects_list = []
     if project_id:
-        projects = Project.objects.filter(id=project_id)
-        data = {
-                'id':projects[0].id,
-                'code':projects[0].code,
-                'name':projects[0].name,
-                'remark':projects[0].remark,
-                'create_time':projects[0].create_time,
-            }
-        projectsJson.append(data)
-        return JsonResponse(projectsJson, safe=False)
-    else:
-        objprojects = Project.objects
-        code = request.POST.get('code')
-        name = request.POST.get('name')
-        projects = ''
-        if code:
-            projects = objprojects.filter(code__contains=code)
-            if name and projects:
-                projects = projects.filter(name__contains=name)
-            return render(request, 'project/table_template.html', locals())
-        elif name:
-            projects = objprojects.filter(name__contains=name)
-        else:
-            projects = objprojects.all()
-    return render(request, 'project/table_template.html', locals())
+        projects = Project.objects.values().filter(id=project_id)
+        projects_list = list(projects)
+    return JsonResponse(projects_list, safe=False)
+
 
 def project_del(request):
     project_id = request.GET.get('id')
@@ -78,13 +58,20 @@ def project_del(request):
         return JsonResponse({'status':500, 'msg':'删除失败'})
     return JsonResponse({'status':200, 'msg':'删除成功'})
 
+
 def datatable(request):
+    objprojects = Project.objects
     code = request.POST.get('code')
     name = request.POST.get('name')
-    if name:
-        projects =Project.objects.values().filter(name__contains=name)
+    projects = ''
+    if code:
+        projects = objprojects.values().filter(code__contains=code)
+        if name and projects:
+            projects = projects.filter(name__contains=name)
+    elif name:
+        projects = objprojects.values().filter(name__contains=name)
     else:
-        projects = Project.objects.values().all()
+        projects = objprojects.values().all()
     projects_list = list(projects)
     return JsonResponse(projects_list, safe=False)
 

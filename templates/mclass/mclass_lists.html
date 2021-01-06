@@ -153,6 +153,10 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
+    function searchData(){
+        var code = $('#').val();
+    }
+
 	$(function () {
 		$('#mclass').DataTable({
 		      'paging'      : true,
