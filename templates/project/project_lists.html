@@ -150,6 +150,8 @@
         return data;
     }
     var ptable = $('#project').DataTable({
+        searching: false,
+        lengthChange:false,
 		ajax:{
 			url:'{% url "project:data" %}',
 			type:'POST',
