@@ -12,6 +12,7 @@ urlpatterns = [
         path('lists/', views.lists, name='lists'),
         path('save/', views.mclass_save, name='save'),
         path('query/', views.mclass_query, name='query'),
-        path('del/', views.mclass_del, name='del'),
-        
+        path('del/', views.m_class_del, name='del'),
+        path('m_data/', views.m_class_data, name='m_data'),
+
     ]

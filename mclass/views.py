@@ -3,11 +3,13 @@ from .models import Mclass
 from .forms import MclassForm
 from django.http.response import JsonResponse
 
+
 # Create your views here.
 def lists(request):
     mclass_form = MclassForm()
     mclasses = Mclass.objects.all()
     return render(request, 'mclass/mclass_lists.html', locals())
+
 
 def mclass_save(request):
     form_add = MclassForm(request.POST)
@@ -35,6 +37,7 @@ def mclass_save(request):
             return JsonResponse({'status':'200', 'msg':'新增成功'})
     return JsonResponse({'status':'500', 'msg':form_add._errors})
 
+
 def mclass_query(request):
     mclass_id = request.POST.get('id')
     mclassJson = []
@@ -48,23 +51,27 @@ def mclass_query(request):
             'remark': mclasses[0].remark,
         }
         mclassJson.append(data)
-        return JsonResponse(mclassJson, safe=False)
-    else:
-        objmclass = Mclass.objects
-        m_type = request.POST.get('m_type')
-        m_class = request.POST.get('m_class')
-        mclasses = ''
-        if m_type:
-            objmclass.filter(mtype=m_type)
-            if m_class and mclasses:
-                mclasses = mclasses.filter(mclass__contains=m_class)
-        elif m_class:
-            mclasses = objmclass.filter(mclass__contains=m_class)
-        else:
-            mclasses = objmclass.all()
-    return render(request, 'mclass/mclass_table_template.html', locals()) 
+    return JsonResponse(mclassJson, safe=False)
 
-def mclass_del(request):
+
+def m_class_data(request):
+    obj_m_class = Mclass.objects
+    m_type = request.POST.get('m_type')
+    m_class = request.POST.get('m_class')
+    m_classes = []
+    if m_type:
+        m_classes = obj_m_class.values().filter(mtype=m_type)
+        if m_class and m_classes:
+            m_classes = m_classes.filter(mclass__contains=m_class)
+    elif m_class:
+        m_classes = obj_m_class.values().filter(mclass__contains=m_class)
+    else:
+        m_classes = obj_m_class.values().all()
+    m_classes_list = list(m_classes)
+    return JsonResponse(m_classes_list, safe=False)
+
+
+def m_class_del(request):
     mclass_id = request.GET.get('id')
     mclass = Mclass.objects.filter(id=mclass_id)
     if mclass:

@@ -78,7 +78,7 @@
 					<!-- form start -->
 					<form class="form-horizontal">
 						<div class="box-body">
-							<input type="text" id="projectid" value="{{ project.id }}" hidden>
+							<input type="text" id="project_id" value="{{ project.id }}" hidden>
 							<div class="form-group">
 						  		{{project_form.code.label_tag}}
 						 		{{project_form.code}}
@@ -96,7 +96,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" id="savebtn">Save changes</button>
+					<button type="button" class="btn btn-primary" id="save_btn">Save changes</button>
 				</div>
 			</div>
 		<!-- /.modal-content -->
@@ -156,7 +156,7 @@
 			url:'{% url "project:data" %}',
 			type:'POST',
 			data:function(){
-				e=sdata();
+				let e=sdata();
 				return e;
 			},
 			dataSrc: ''
@@ -169,7 +169,7 @@
 	        { data: 'remark' },
 	        { data: null, render: function(data, type, row) {
 	            id=data['id']
-                return '<button class="btn btn-sm btn-primary btn-edit" onclick="javascript:modal(\'edit\','+ id +');">编辑</button>'+'&nbsp;&nbsp;<button class="btn btn-sm btn-warning" onclick="javascript:setBan('+ id +');">删除</button>';
+                return '<button class="btn btn-sm btn-primary btn-edit" onclick="javascript:modal(\'edit\','+ id +');">编辑</button>'+'&nbsp;&nbsp;<button class="btn btn-sm btn-warning" onclick="javascript:del('+ id +');">删除</button>';
             }},
 	        {
 	            data: 'id',
@@ -218,9 +218,9 @@
 	}
 	
     function save(id){
-		var code = $('div#modal-project input#code')[0].value;
-		var name = $('div#modal-project input#name')[0].value;
-		var remark = $('div#modal-project textarea#remark')[0].value;
+		const code = $('div#modal-project input#code')[0].value;
+		const name = $('div#modal-project input#name')[0].value;
+		const remark = $('div#modal-project textarea#remark')[0].value;
 		$.ajax({
 			url:"{% url 'project:save' %}",
 			type:'POST',
@@ -237,7 +237,7 @@
 
     function modal(name, id){
 		id = id;
-		var title = $('div#modal-project h4.modal-title')[0]
+		let title = $('div#modal-project h4.modal-title')[0]
 		if(name=='edit'){
 			$.ajax({
 				url:"{% url 'project:query' %}",
@@ -247,10 +247,10 @@
 					'id':id,
 				},
 				success:function(res){
-					var ids = $('div#modal-project input#projectid')[0]
-					var code = $('div#modal-project input#code')[0];
-					var name = $('div#modal-project input#name')[0];
-					var remark = $('div#modal-project textarea#remark')[0];
+					let ids = $('div#modal-project input#project_id')[0]
+					let code = $('div#modal-project input#code')[0];
+					let name = $('div#modal-project input#name')[0];
+					let remark = $('div#modal-project textarea#remark')[0];
 					//code.setAttribute('text', res[0].code);
 					title.textContent='编辑';
 					ids.value = id;
@@ -267,17 +267,17 @@
 			$("#modal-project").modal();
 		}else{
 			title.textContent='新增';
-			var l = $('input, textarea');
-			for(i =0; i < l.length; i++){
+			let l = $('input, textarea');
+			for(let i =0; i < l.length; i++){
 				l[i].value=''
 			}
 			$("#modal-project").modal();
 		}
-		
 	}
-	$("#savebtn").click(function(){
-		id = $('div#modal-project input#projectid')[0].value;
-		save(id);				
+
+	$("#save_btn").click(function(){
+        let id = $('div#modal-project input#project_id')[0].value;
+        save(id);
     });
 	
 </script>
