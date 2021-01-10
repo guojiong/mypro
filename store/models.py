@@ -1,6 +1,7 @@
 from django.db import models
 from project.models import Project
 
+
 # Create your models here.
 class Store(models.Model):
     
@@ -20,6 +21,7 @@ class Store(models.Model):
         db_table = 'store'
         verbose_name = '库存'
         verbose_name_plural = '库存'
+
 
 class InStore(models.Model):
     
@@ -50,7 +52,8 @@ class InStore(models.Model):
         db_table = 'instore'
         verbose_name = '入库单'
         verbose_name_plural = '入库单'
-        
+
+
 class OutStore(models.Model):
     
     date = models.DateField(verbose_name='出库日期')

@@ -4,14 +4,16 @@ from .models import Project
 from . import forms
 from .forms import ProjectForm
 
+
 # Create your views here.
 def index(request):
     return render(request, 'base.html', )
 
+
 def lists(request):
     project_form = forms.ProjectForm()
-    objprojects = Project.objects
-    projects = objprojects.all()
+    # objprojects = Project.objects
+    # projects = objprojects.all()
     return render(request, 'project/project_lists.html', locals())
 
 

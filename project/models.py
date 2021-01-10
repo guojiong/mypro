@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Project(models.Model):
     code = models.CharField(max_length=128, unique=True, verbose_name='项目编号')
@@ -16,3 +17,6 @@ class Project(models.Model):
         db_table = 'project'
         verbose_name = '项目'
         verbose_name_plural = '项目'
+
+    def getProjectDropDownList(self):
+        return tuple([(0, '无')] + list(Project.objects.values_list('id', 'name').distinct()))

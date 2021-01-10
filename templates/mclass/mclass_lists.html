@@ -187,8 +187,8 @@
     m_table.on('order.dt', function () {
         m_table.column(0, {order:'applied'}).nodes().each(function (cell, i) {
             cell.innerHTML = i+1
-        }).draw();
-    });
+        });
+    }).draw();
 
     $("#q_btn").click(function () {
         m_table.ajax.reload();

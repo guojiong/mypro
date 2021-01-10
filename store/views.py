@@ -7,7 +7,7 @@ from project.models import Project
 # Create your views here.
 def instore_lists(request):
     store_form = InStoreForm()
-    stores = InStore.objects.all()
+    # stores = InStore.objects.all()
     return render(request, 'store/instore_lists.html', locals())
 
 def instore_save(request):
@@ -32,6 +32,49 @@ def instore_save(request):
             return JsonResponse({'status':200, 'msg':'新增成功'})
     return JsonResponse({'status': 500, 'msg':instore_form._errors})
 
+
 def store_query(request):
+    project_id = request.POST.get()
+    m_type = request.POST.get()
+    m_class = request.POST.get()
+    m_name = request.POST.get()
+    m_specifi = request.POST.get()
+    searchCondition = {}
+    if project_id:
+        searchCondition[''] = project_id
+    if m_type:
+        searchCondition['m'] = m_type
+    if m_class:
+        searchCondition[''] = m_class
+    if m_name:
+        searchCondition[''] = m_name
+    if m_specifi:
+        searchCondition[''] = m_specifi
+    tmp = InStore.objects.values().filter(**searchCondition)
+    tmp = InStore.objects.filter()
+
     return
 
+
+def in_store_data(request):
+    m_type = request.POST.get('m_type')
+    m_class = request.POST.get('m_class')
+    m_name = request.POST.get('m_name')
+    re_list = []
+    searchCondition = {}
+    if m_type:
+        searchCondition['mtype__contains'] = m_type
+    if m_class:
+        searchCondition['mclass__contains'] = m_class
+    if m_name:
+        searchCondition['mname__contains'] = m_name
+
+    tmp = InStore.objects.values().filter(**searchCondition)
+
+    if tmp:
+        for in_store in tmp:
+            p = Project.objects.values().filter(id=in_store['project_id'])
+            in_store['project'] = p[0]
+            re_list.append(in_store)
+
+    return JsonResponse(re_list, safe=False)

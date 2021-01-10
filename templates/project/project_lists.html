@@ -61,6 +61,17 @@
                             <th class="col-lg-2">ids</th>
 						</tr>
 					</thead>
+                    <tfoot>
+                        <tr>
+							<th class="col-lg-1">序号</th>
+							<th class="col-lg-2">项目编号</th>
+							<th class="col-lg-2">项目名称</th>
+							<th class="col-lg-2">创建时间</th>
+							<th class="col-lg-2">备注</th>
+							<th class="col-lg-2 text-center">操作</th>
+                            <th class="col-lg-2">ids</th>
+						</tr>
+                    </tfoot>
 				</table>
 			</div>
 		</div>
@@ -138,9 +149,9 @@
         return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');
     }
     function sdata(){
-        var code = trim($('input#project_c').val());
-        var name = trim($('input#project_n').val());
-        data = {csrfmiddlewaretoken:'{{csrf_token}}',}
+        const code = trim($('input#project_c').val());
+        const name = trim($('input#project_n').val());
+        let data = {csrfmiddlewaretoken:'{{csrf_token}}',};
         if (code!=''){
             data['code']=code;
         }
@@ -149,10 +160,14 @@
         }
         return data;
     }
-    var ptable = $('#project').DataTable({
-        searching: false,
-        lengthChange:false,
-		ajax:{
+    let p_table = $('#project').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+		"ajax":{
 			url:'{% url "project:data" %}',
 			type:'POST',
 			data:function(){
@@ -161,14 +176,14 @@
 			},
 			dataSrc: ''
 		},
-	    columns: [
-	        { data: null },
+	    "columns": [
+	        { data: 'id' },
 	        { data: 'name' },
 	        { data: 'code' },
 	        { data: 'create_time' },
 	        { data: 'remark' },
 	        { data: null, render: function(data, type, row) {
-	            id=data['id']
+	            let id=data['id']
                 return '<button class="btn btn-sm btn-primary btn-edit" onclick="javascript:modal(\'edit\','+ id +');">编辑</button>'+'&nbsp;&nbsp;<button class="btn btn-sm btn-warning" onclick="javascript:del('+ id +');">删除</button>';
             }},
 	        {
@@ -179,14 +194,15 @@
 
     });
 
-    ptable.on('order.dt', function () {
-        ptable.column(0, {order:'applied'}).nodes().each(function (cell, i) {
-            cell.innerHTML = i+1
-        }).draw();
-    });
+    p_table.on( 'order.dt search.dt', function () {
+        p_table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+        } );
+    } ).draw();
+
 
     $('#q_btn').click(function(){
-        ptable.ajax.reload();
+        p_table.ajax.reload();
     });
 
     function succFunction(res){
@@ -279,6 +295,6 @@
         let id = $('div#modal-project input#project_id')[0].value;
         save(id);
     });
-	
+
 </script>
 {% endblock js %}

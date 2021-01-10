@@ -25,26 +25,44 @@
 			<div class="box-header">
 				<form class="form-horizontal">
 					<div class="box-body">
-						<div class="form-group col-sm-4">
-							<label for="project_c" class="col-sm-4 control-label">材料编号：</label>
-							<div class="col-sm-8">
-								<input type="text" class="form-control" id="project_c" placeholder="项目编号">
-							</div>
-						</div>
-						<div class="form-group col-sm-4">
-							<label for="project_n" class="col-sm-4 control-label">材料名称：</label>
-							<div class="col-sm-8">
-								<input type="text" class="form-control" id="project_n" placeholder="项目名称">
-							</div>
-						</div>
-						<div class="form-group col-sm-4">
-							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
-							<span class="col-sm-1"></span>
-							<button type="reset" class="btn btn-default col-sm-3">重置</button>
-							<span class="col-sm-1"></span>
-							<button type="button" class="btn btn-info col-sm-3" onclick="javascript:modal();">新增</button>
-						</div>
-             			</div>
+                        <div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_receiptNo" class="col-sm-4 control-label">入库单号：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_receiptNo" placeholder="入库单号">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_m_type" class="col-sm-4 control-label">材料类别：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_m_type" placeholder="材料类别">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_m_class" class="col-sm-4 control-label">材料小类：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_m_class" placeholder="材料小类">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_m_name" class="col-sm-4 control-label">材料名称：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_m_name" placeholder="材料名称">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group col-lg-4" ></div>
+                            <div class="form-group col-lg-4" >
+                                <button type="button" class="btn btn-default col-sm-3" id="q_btn">查询</button>
+                                <span class="col-sm-1"></span>
+                                <button type="reset" class="btn btn-default col-sm-3">重置</button>
+                                <span class="col-sm-1"></span>
+                                <button type="button" class="btn btn-info col-sm-3" onclick="javascript:modal();">新增</button>
+                            </div>
+                            <div class="form-group col-lg-4" ></div>
+                        </div>
+                    </div>
 					<!-- /.box-body -->
 				</form>
 			</div>
@@ -53,49 +71,19 @@
 					<thead>
 						<tr>
 							<th style="width: 90px">日期</th>
-							<th class="col-lg-1">出库单号</th>
+							<th class="col-lg-1">入库单号</th>
 							<th class="col-lg-1" style="width: 115px">材料类别 > 小类</th>
-							<!-- <th class="col-lg-1">材料小类</th> -->
 							<th class="col-lg-1">材料名称</th>
 							<th class="col-lg-1" style="width: 115px">品牌/规格/型号</th>
 							<th>数量</th>
 							<th>单位</th>
-							<!-- <th class="col-lg-1">厂家名称</th> -->
 							<th>材料费</th>
-							<!-- <th>单价</th> -->
 							<th>验收员</th>
-							<!-- <th>仓库</th> -->
 							<th class="col-lg-1" >所属项目</th>
 							<th class="col-lg-1" >供应商</th>
-							<!-- <th>备注</th> -->
-							<!-- <th class="col-lg-1 text-center">操作</th> -->
 						</tr>
 					</thead>
 					<tbody>
-						{% for store in stores %}
-							<tr>
-								<td class="text-green text-bold">{{ store.date|date:"Y-m-d" }}</td>
-								<td>{{ store.receiptNo }}</td>
-								<td>{{ store.mtype }} > {{ store.mclass }}</td>
-								<!-- <td>{{ store.mclass }}</td> -->
-								<td>{{ store.mname }}</td>
-								<td>{{ store.specifi }}</td>
-								<td>{{ store.num }}</td>
-								<td>{% if store.unit %}{{ store.unit }}{% endif %}</td>
-								<!-- <td>{% if store.factory %}{{ store.factory }}{% endif %}</td> -->
-								<td>{{ store.materialfee }}</td>
-								<!-- <td>{{ store.price }}</td> -->
-								<td>{{ store.inspector }}</td>
-								<!-- <td>{% if store.storeloc %}{{ store.storeloc }}{% endif %}</td> -->
-								<td>{{ store.project.name }}</td>
-								<td>{{ store.provider }}</td>
-								<!-- <td>{% if store.remark %}{{ store.remark }}{% endif %}</td> -->
-								<td class="text-bold text-center">
-								<!-- <a href="javascript:modal('edit',{{store.id}})">编辑</a>&nbsp;&nbsp;&nbsp; -->
-							</tr>
-							{% empty %}
-							<tr>没有数据！</tr>
-					  	{% endfor %}
 				  	</tbody>
 				</table>
 			</div>
@@ -125,12 +113,17 @@
 							  		{{store_form.receiptNo |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.receiptNo}}
 								</div>
-								<div class="form-group col-lg-4">
+                                <div class="form-group col-lg-4">
+							  		{{store_form.project |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.project}}
+								</div>
+
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
 							  		{{ store_form.mtype|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.mtype}}
 								</div>
-							</div>
-							<div class="form-group">
 								<div class="form-group col-lg-4">
 							  		{{store_form.mclass |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.mclass}}
@@ -139,12 +132,13 @@
 							  		{{ store_form.mname|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.mname}}
 								</div>
-								<div class="form-group col-lg-4">
+
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
 							  		{{store_form.specifi |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.specifi}}
 								</div>
-							</div>
-							<div class="form-group">
 								<div class="form-group col-lg-4">
 							  		{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.num}}
@@ -153,12 +147,13 @@
 							  		{{store_form.unit |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.unit}}
 								</div>
-								<div class="form-group col-lg-4">
+
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
 							  		{{store_form.materialfee |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.materialfee}}
 								</div>
-							</div>
-							<div class="form-group">
 								<div class="form-group col-lg-4">
 							  		{{ store_form.price|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.price}}
@@ -167,12 +162,13 @@
 							  		{{store_form.rate|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.rate}}
 								</div>
-								<div class="form-group col-lg-4">
+
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
 							  		{{store_form.inspector |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.inspector}}
 								</div>
-							</div>
-							<div class="form-group">
 								<div class="form-group col-lg-4">
 							  		{{store_form.buyer |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.buyer}}
@@ -181,10 +177,7 @@
 							  		{{store_form.storeloc |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.storeloc}}
 								</div>
-								<div class="form-group col-lg-4">
-							  		{{store_form.project |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.project}}
-								</div>
+
 							</div>
 							<div class="form-group">
 								<div class="form-group col-lg-4">
@@ -243,45 +236,71 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
-	$(function () {
-		$('#store_table').DataTable({
-		      'paging'      : true,
-		      'lengthChange': false,
-		      'searching'   : false,
-		      'ordering'    : true,
-		      'info'        : true,
-		      'autoWidth'   : false,
-		    })
-    })
+    function send_data(){
+        const receiptNo = trim($('input#c_receiptNo')[0].value);
+        const m_type = trim($('input#c_m_type')[0].value);
+        const m_class = trim($('input#c_m_class')[0].value);
+		const m_name = trim($('input#c_m_name')[0].value);
+		let data = {csrfmiddlewaretoken:'{{csrf_token}}'};
+
+		if (receiptNo!=''){
+			data['m_type']=receiptNo;
+		}
+		if (m_type!=''){
+			data['m_type']=m_type;
+		}
+		if (m_class!=''){
+			data['m_class']=m_class;
+		}
+		if (m_name!=''){
+			data['m_name']=m_name;
+		}
+        return data;
+    }
+
+    let in_table = $('#store_table').DataTable({
+        paging: true,
+        lengthChange: false,
+        searching: false,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        ajax: {
+            url: "{% url 'store:in_data' %}",
+            type: "POST",
+            data: function () {
+                let e = send_data();
+                return e;
+            },
+            dataSrc: ''
+        },
+        columns: [
+            {data: 'date'},
+            {data: 'receiptNo'},
+            {data: 'mtype'},
+            {data: 'mname'},
+            {data: 'specifi'},
+            {data: 'num'},
+            {data: 'unit'},
+            {data: 'materialfee'},
+            {data: 'inspector'},
+            {data: 'project.name'},
+            {data: 'provider'},
+        ]
+    });
+
     function trim(str){   
     	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
 	}
-    function query(){
-		var code = trim($('input#project_c')[0].value);
-		var name = trim($('input#project_n')[0].value);
-		data = {csrfmiddlewaretoken:'{{csrf_token}}',}
-		if (code!=''){
-			data['code']=code;
-		}
-		if (name!=''){
-			data['name']=name;
-		}
-		$.ajax({
-			url:"{% url 'project:query' %}",
-			type:'POST',
-			async : false, 
-			data:data,
-			success: function (data) {
-				$('tbody').html(data);
- 			},
-		});
-	}
+    $("#q_btn").click(function () {
+        in_table.ajax.reload();
+    });
     
     function succFunction(res){
 		if(res.status==200){
 			// 消息框
 			toastr.options.timeOut = 1000;
-			toastr.options.onHidden = function() { window.location.href = "{% url 'project:lists' %}"; }
+			toastr.options.onHidden = function() { window.location.href = "{% url 'store:inlists' %}"; }
 			toastr.success(res.msg);
 			return true;
 		}else{
@@ -307,24 +326,24 @@
 	}
 	
     function save(id){
-    	var date = $('div#modal-store input#date')[0].value;
-    	var receiptNo = $('div#modal-store input#receiptNo')[0].value;
-    	var mtype = $('div#modal-store input#mtype')[0].value;
-    	var mclass = $('div#modal-store input#mclass')[0].value;
-    	var mname = $('div#modal-store input#mname')[0].value;
-    	var specifi = $('div#modal-store input#specifi')[0].value;
-    	var num = $('div#modal-store input#num')[0].value;
-    	var unit = $('div#modal-store input#unit')[0].value;
-    	var rate = $('div#modal-store input#rate')[0].value;
-    	var factory = $('div#modal-store input#factory')[0].value;
-    	var materialfee = $('div#modal-store input#materialfee')[0].value;
-    	var price = $('div#modal-store input#price')[0].value;
-    	var buyer = $('div#modal-store input#buyer')[0].value;
-    	var inspector = $('div#modal-store input#inspector')[0].value;
-    	var storeloc = $('div#modal-store input#storeloc')[0].value;
-    	var project = $('div#modal-store input#project')[0].value;
-    	var provider = $('div#modal-store input#provider')[0].value;
-    	var remark = $('div#modal-store textarea#remark')[0].value;
+    	const date = $('div#modal-store input#date')[0].value;
+    	const receiptNo = $('div#modal-store input#receiptNo')[0].value;
+    	const mtype = $('div#modal-store input#mtype')[0].value;
+    	const mclass = $('div#modal-store input#mclass')[0].value;
+    	const mname = $('div#modal-store input#mname')[0].value;
+    	const specifi = $('div#modal-store input#specifi')[0].value;
+    	const num = $('div#modal-store input#num')[0].value;
+    	const unit = $('div#modal-store input#unit')[0].value;
+    	const rate = $('div#modal-store input#rate')[0].value;
+    	const factory = $('div#modal-store input#factory')[0].value;
+    	const materialfee = $('div#modal-store input#materialfee')[0].value;
+    	const price = $('div#modal-store input#price')[0].value;
+    	const buyer = $('div#modal-store input#buyer')[0].value;
+    	const inspector = $('div#modal-store input#inspector')[0].value;
+    	const storeloc = $('div#modal-store input#storeloc')[0].value;
+    	const project = $('div#modal-store select#project')[0].value;
+    	const provider = $('div#modal-store input#provider')[0].value;
+    	const remark = $('div#modal-store textarea#remark')[0].value;
 		$.ajax({
 			url:"{% url 'store:save' %}",
 			type:'POST',
@@ -368,10 +387,10 @@
 					'id':id,
 				},
 				success:function(res){
-					var ids = $('div#modal-store input#storeid')[0]
-					var code = $('div#modal-store input#code')[0];
-					var name = $('div#modal-store input#name')[0];
-					var remark = $('div#modal-store textarea#remark')[0];
+					let ids = $('div#modal-store input#storeid')[0]
+					let code = $('div#modal-store input#code')[0];
+					let name = $('div#modal-store input#name')[0];
+					let remark = $('div#modal-store textarea#remark')[0];
 					//code.setAttribute('text', res[0].code);
 					title.textContent='编辑';
 					ids.value = id;
@@ -388,16 +407,23 @@
 			$("#modal-store").modal();
 		}else{
 			title.textContent='新增';
-			var l = $('input, textarea');
-			for(i =0; i < l.length; i++){
+			let l = $('input, textarea');
+			for(let i = 0; i < l.length; i++){
 				l[i].value=''
 			}
+			let date = $('div#modal-store input#date')[0];
+			date.valueAsDate = new Date();
+			let mtype = $('div#modal-store select#mtype')[0];
+			let ops = mtype.options
+            for( let i=0; i < ops.length; i++){
+                ops[i].innerHTML = ops[i].innerHTML.replace('(\'', '').replace('\',)','')
+            }
 			$("#modal-store").modal();
 		}
 		
 	}
 	$("#savebtn").click(function(){
-		id = $('div#modal-store input#storeid')[0].value;
+		const id = $('div#modal-store input#storeid')[0].value;
 		save(id);				
     });
 	

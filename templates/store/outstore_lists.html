@@ -25,24 +25,42 @@
 			<div class="box-header">
 				<form class="form-horizontal">
 					<div class="box-body">
-						<div class="form-group col-sm-4">
-							<label for="project_c" class="col-sm-4 control-label">材料编号：</label>
-							<div class="col-sm-8">
-								<input type="text" class="form-control" id="project_c" placeholder="项目编号">
-							</div>
-						</div>
-						<div class="form-group col-sm-4">
-							<label for="project_n" class="col-sm-4 control-label">材料名称：</label>
-							<div class="col-sm-8">
-								<input type="text" class="form-control" id="project_n" placeholder="项目名称">
-							</div>
-						</div>
-						<div class="form-group col-sm-4">
-							<button type="button" class="btn btn-default col-sm-3" onclick="javascript:query();">查询</button>
-							<span class="col-sm-1"></span>
-							<button type="reset" class="btn btn-default col-sm-3">重置</button>
-						</div>
-             			</div>
+						<div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_outNo" class="col-sm-4 control-label">出库单号：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_outNo" placeholder="出库单号">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_m_type" class="col-sm-4 control-label">材料类别：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_m_type" placeholder="材料类别">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_m_class" class="col-sm-4 control-label">材料小类：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_m_class" placeholder="材料小类">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_m_name" class="col-sm-4 control-label">材料名称：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_m_name" placeholder="材料名称">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group col-lg-5" ></div>
+                            <div class="form-group col-lg-2" >
+                                <button type="button" class="btn btn-default col-sm-5" id="q_btn">查询</button>
+                                <span class="col-sm-2"></span>
+                                <button type="reset" class="btn btn-default col-sm-5">重置</button>
+                            </div>
+                            <div class="form-group col-lg-5" ></div>
+                        </div>
+                    </div>
 					<!-- /.box-body -->
 				</form>
 			</div>
@@ -64,26 +82,6 @@
 							<th>备注</th>
 						</tr>
 					</thead>
-					<tbody>
-						{% for store in outstores %}
-							<tr>
-								<td class="text-green text-bold">{{ store.date|date:"Y-m-d" }}</td>
-								<td>{{ store.outNo }}</td>
-								<td>{{ store.store.mtype }} > {{ store.store.mclass }}</td>
-								<!-- <td>{{ store.mclass }}</td> -->
-								<td>{{ store.store.mname }}</td>
-								<td>{{ store.store.specifi }}</td>
-								<td>{{ store.num }}</td>
-								<td>{% if store.unit %}{{ store.unit }}{% endif %}</td>
-								<td>{{ store.toWhere }}</td>
-								<td>{{ store.receiver }}</td>
-								<td>{{ store.store.project.name }}</td>
-								<td>{% if store.remark %}{{ store.remark }}{% endif %}</td>
-							</tr>
-							{% empty %}
-							<tr>没有数据！</tr>
-					  	{% endfor %}
-				  	</tbody>
 				</table>
 			</div>
 		</div>
@@ -97,39 +95,65 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
-	$(function () {
-		$('#store_table').DataTable({
-		      'paging'      : true,
-		      'lengthChange': false,
-		      'searching'   : false,
-		      'ordering'    : true,
-		      'info'        : true,
-		      'autoWidth'   : false,
-		    })
-    })
+    function c_data(){
+        const outNo = trim($('input#c_outNo')[0].value);
+        const m_type = trim($('input#c_m_type')[0].value);
+        const m_class = trim($('input#c_m_class')[0].value);
+		const m_name = trim($('input#c_m_name')[0].value);
+		let data = {csrfmiddlewaretoken:'{{csrf_token}}'};
+
+		if (outNo!=''){
+			data['m_type'] = outNo;
+		}
+		if (m_type!=''){
+			data['m_type'] = m_type;
+		}
+		if (m_class!=''){
+			data['m_class'] = m_class;
+		}
+		if (m_name!=''){
+			data['m_name'] = m_name;
+		}
+        return data;
+    }
+    let s_table = $('#store_table').DataTable({
+        paging: true,
+        lengthChange: false,
+        searching: false,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        "ajax":{
+			url:'{% url "store:out_data" %}',
+			type:'POST',
+			data:function(){
+				let e=c_data();
+				return e;
+			},
+			dataSrc: ''
+		},
+        columns:[
+            { data: 'date' },
+            { data: 'outNo' },
+            { data: 'store.mtype_mclass' },
+            { data: 'store.mname' },
+            { data: 'store.specifi' },
+            { data: 'num' },
+            { data: 'store.unit' },
+            { data: 'toWhere' },
+            { data: 'receiver' },
+            { data: 'store.project.name' },
+            { data: 'remark' },
+        ]
+    });
+
     function trim(str){   
     	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
 	}
-    function query(){
-		var code = trim($('input#project_c')[0].value);
-		var name = trim($('input#project_n')[0].value);
-		data = {csrfmiddlewaretoken:'{{csrf_token}}',}
-		if (code!=''){
-			data['code']=code;
-		}
-		if (name!=''){
-			data['name']=name;
-		}
-		$.ajax({
-			url:"{% url 'project:query' %}",
-			type:'POST',
-			async : false, 
-			data:data,
-			success: function (data) {
-				$('tbody').html(data);
- 			},
-		});
-	}
+
+	$('#q_btn').click(function(){
+        s_table.ajax.reload();
+    });
     
 </script>
 {% endblock js %}

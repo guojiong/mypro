@@ -3,16 +3,20 @@ Created on 2020年12月25日
 
 @author: Administrator
 '''
+from django.db import utils
+
 from store.forms import OutStoreForm
-from store.models import Store
+from store.models import Store, InStore
 from django.shortcuts import render
 from django.http.response import JsonResponse
 from project.models import Project
 
+
 def qstore_lists(request):
     store_form = OutStoreForm()
-    stores = Store.objects.all()
+    # stores = Store.objects.all()
     return render(request, 'store/qstore_lists.html', locals())
+
 
 def qstore_query(request):
     store_id = request.POST.get('id')
@@ -24,6 +28,39 @@ def qstore_query(request):
             ret_list[0]['pname'] = project.name
             return JsonResponse(ret_list, safe=False)
         else:
-            return JsonResponse({'status':500, 'msg':'查询失败'})
-    return JsonResponse({'status':500, 'msg':'未获取到查询条件'})
+            return JsonResponse({'status': 500, 'msg': '查询失败'})
+    return JsonResponse({'status': 500, 'msg': '未获取到查询条件'})
 
+
+def q_store_data(request):
+    m_type = request.POST.get('m_type')
+    m_class = request.POST.get('m_class')
+    m_name = request.POST.get('m_name')
+    re_list = []
+    searchCondition = {}
+    if m_type:
+        searchCondition['mtype__contains'] = m_type
+    if m_class:
+        searchCondition['mclass__contains'] = m_class
+    if m_name:
+        searchCondition['mname__contains'] = m_name
+
+    tmp = Store.objects.values().filter(**searchCondition)
+    if tmp:
+        for s in tmp:
+            p = Project.objects.values().filter(id=s['project_id'])
+            s['project'] = list(p)[0]
+            re_list.append(s)
+
+    return JsonResponse(re_list, safe=False)
+
+
+def q_in_store_by_store_id(request):
+    store_ids = request.POST.get('id')
+    re_list = []
+    if store_ids:
+        s = Store.objects.filter(id=store_ids)
+        in_store = InStore.objects.values().filter(project=s[0].project, mtype=s[0].mtype, mclass=s[0].mclass, mname=s[0].mname, specifi=s[0].specifi)
+        if in_store:
+            re_list = list(in_store)
+    return JsonResponse(re_list, safe=False)

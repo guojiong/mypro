@@ -7,7 +7,7 @@ from django.http.response import JsonResponse
 # Create your views here.
 def lists(request):
     mclass_form = MclassForm()
-    mclasses = Mclass.objects.all()
+    # mclasses = Mclass.objects.all()
     return render(request, 'mclass/mclass_lists.html', locals())
 
 
