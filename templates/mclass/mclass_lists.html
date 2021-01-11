@@ -160,6 +160,7 @@
         searching: false,
         ajax:{
             url:'{% url "mclass:m_data" %}',
+            async : false,
             type:"POST",
             data:function () {
                 let e=searchData();
@@ -211,6 +212,7 @@
 		$("#confirmDelete").click(function(){
 			$.ajax({
 				url:"{% url 'mclass:del'%}",
+                async : false,
 				type:'get',
 				data:{
 					'id':id
@@ -227,6 +229,7 @@
 		const remark = $('div#modal-mclass textarea#remark')[0].value;
 		$.ajax({
 			url:"{% url 'mclass:save' %}",
+            async : false,
 			type:'POST',
 			data:{
 				csrfmiddlewaretoken:'{{csrf_token}}',
@@ -246,6 +249,7 @@
 		if(name=='edit'){
 			$.ajax({
 				url:"{% url 'mclass:query' %}",
+                async : false,
 				type:'POST',
 				data:{
 					csrfmiddlewaretoken:'{{ csrf_token }}',

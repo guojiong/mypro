@@ -25,5 +25,4 @@ urlpatterns = [
     path('project/', include('project.urls', namespace='project')),
     path('mclass/', include('mclass.urls', namespace='mclass')),
     path('store/', include('store.urls', namespace='store')),
-    path('demo/', include('demo.urls', namespace='demo')),
 ]

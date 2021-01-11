@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'project',
     'mclass',
     'store',
-    'demo',
 ]
 
 MIDDLEWARE = [

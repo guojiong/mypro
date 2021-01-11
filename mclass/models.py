@@ -17,7 +17,3 @@ class Mclass(models.Model):
         db_table = 'mclass'
         verbose_name = '项目'
         verbose_name_plural = '项目'
-
-    def getMclassDropDownList(self):
-        return tuple([(0, '无')] + list(Mclass.objects.values_list('id', 'mclass').distinct()))
-

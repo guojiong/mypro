@@ -413,10 +413,15 @@
 			}
 			let date = $('div#modal-store input#date')[0];
 			date.valueAsDate = new Date();
-			let mtype = $('div#modal-store select#mtype')[0];
-			let ops = mtype.options
-            for( let i=0; i < ops.length; i++){
-                ops[i].innerHTML = ops[i].innerHTML.replace('(\'', '').replace('\',)','')
+			let m_type = $('div#modal-store select#mtype')[0];
+			let m_type_ops = m_type.options
+            for( let i=0; i < m_type_ops.length; i++){
+                m_type_ops[i].innerHTML = m_type_ops[i].innerHTML.replace('(\'', '').replace('\',)','')
+            }
+            let m_class = $('div#modal-store select#mclass')[0];
+			let m_class_ops = m_class.options
+            for( let i=0; i < m_class_ops.length; i++){
+                m_class_ops[i].innerHTML = m_class_ops[i].innerHTML.replace('(\'', '').replace('\',)','')
             }
 			$("#modal-store").modal();
 		}
@@ -427,6 +432,21 @@
 		save(id);				
     });
 	
-	
+	$('select#mtype').change(function () {
+        const m_type_s = $(this)
+        let send = {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            m_type: '主要材料'
+        }
+        $.ajax({
+            url:"{% url 'mclass:m_data' %}",
+            async : false,
+            type: "POST",
+            data: send,
+            success: function (data) {
+                alert(data)
+            }
+        })
+    });
 </script>
 {% endblock js %}

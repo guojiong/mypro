@@ -59,15 +59,18 @@ def m_class_data(request):
     m_type = request.POST.get('m_type')
     m_class = request.POST.get('m_class')
     m_classes = []
+
+    searchCondition = dict()
     if m_type:
-        m_classes = obj_m_class.values().filter(mtype=m_type)
-        if m_class and m_classes:
-            m_classes = m_classes.filter(mclass__contains=m_class)
-    elif m_class:
-        m_classes = obj_m_class.values().filter(mclass__contains=m_class)
+        searchCondition['mtype__contains'] = m_type
+    if m_class:
+        searchCondition['mclass__contains'] = m_class
+
+    m_classes = obj_m_class.values().filter(**searchCondition)
+    if m_classes:
+        m_classes_list = list(m_classes)
     else:
-        m_classes = obj_m_class.values().all()
-    m_classes_list = list(m_classes)
+        m_classes_list = []
     return JsonResponse(m_classes_list, safe=False)
 
 

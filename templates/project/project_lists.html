@@ -169,6 +169,7 @@
         "autoWidth": false,
 		"ajax":{
 			url:'{% url "project:data" %}',
+            async : false,
 			type:'POST',
 			data:function(){
 				let e=sdata();
@@ -222,6 +223,7 @@
 		$("#confirmDelete").click(function(){
 			$.ajax({
 				url:"{% url 'project:del'%}",
+                async : false,
 				type:'get',
 				data:{
 					'id':id
@@ -239,6 +241,7 @@
 		const remark = $('div#modal-project textarea#remark')[0].value;
 		$.ajax({
 			url:"{% url 'project:save' %}",
+            async : false,
 			type:'POST',
 			data:{
 				csrfmiddlewaretoken:'{{csrf_token}}',
