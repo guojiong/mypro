@@ -236,7 +236,6 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
-    import fa from "../../static/AdminLTE/bower_components/moment/src/locale/fa";
 
     function send_data(){
         const receiptNo = trim($('input#c_receiptNo')[0].value);
@@ -418,12 +417,15 @@
 			let m_type = $('div#modal-store select#mtype')[0];
 			let m_type_ops = m_type.options
             for( let i=0; i < m_type_ops.length; i++){
-                m_type_ops[i].innerHTML = m_type_ops[i].innerHTML.replace('(\'', '').replace('\',)','')
+                let op_name = m_type_ops[i].innerHTML.replace('(\'', '').replace('\',)','');
+                m_type_ops[i].outerHTML = '<option value="' + op_name + '">' + op_name + '</option>';
             }
             let m_class = $('div#modal-store select#mclass')[0];
 			let m_class_ops = m_class.options
             for( let i=0; i < m_class_ops.length; i++){
-                m_class_ops[i].innerHTML = m_class_ops[i].innerHTML.replace('(\'', '').replace('\',)','')
+                // m_class_ops[i].innerHTML = m_class_ops[i].innerHTML.replace('(\'', '').replace('\',)','');
+                let op_name = m_class_ops[i].innerHTML.replace('(\'', '').replace('\',)','');
+                m_class_ops[i].outerHTML = '<option value="' + op_name + '">' + op_name + '</option>';
             }
 			$("#modal-store").modal();
 		}
@@ -448,6 +450,7 @@
             success: function (data) {
                 let sele_mclass_ops = $('select#mclass')
                 sele_mclass_ops.empty();
+                sele_mclass_ops.append('<option></option>');
                 for(let i = 0; i < data.length; i++ ){
                     d = data[i]
                     var objOption = document.createElement("OPTION");
@@ -472,15 +475,16 @@
             type: "POST",
             data: send,
             success: function (data) {
-                let sele_mtype_ops = $('select#mtype')
-                sele_mtype_ops.empty();
-                for(let i = 0; i < data.length; i++ ){
-                    let d = data[i]
-                    let objOption = document.createElement("OPTION");
-                    objOption.text = d['mtype'];
-                    objOption.value = d['mtype'];
-                    sele_mtype_ops.append(objOption);
-                }
+                $('select#mtype option').each(function(){
+                    $(this).attr("selected",false);
+                });
+                $('select#mtype').find("option:contains('" + data[0]['mtype'] + "')").attr("selected",true);
+                //this.$forceUpdate()
+                //$.parser.parse($('select#mtype'))
+                //$('select#mtype').refresh();
+                //$('select#mtype').reload();
+                $('select#mtype').attr('src',$('select#mtype').attr('src'));
+                //$('select#mtype').trigger("change");
 
             }
         })

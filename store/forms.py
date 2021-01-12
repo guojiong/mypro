@@ -13,7 +13,6 @@ class InStoreForm(forms.Form):
     id = forms.IntegerField(required=False, )
     date = forms.DateField(label='入库日期', widget=forms.DateInput(attrs={'id': 'date', 'type': 'date', 'class': 'form-control', 'style': "width:180px",}))
     receiptNo = forms.CharField(label='入库单号', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'receiptNo', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
-    #mtype = forms.CharField(label='材料分类', max_length=128, strip=True, widget=forms.Select(attrs={'id':'mtype', 'class': 'form-control', 'style':"width:180px", 'value':''}, choices=Mclass().getMtypeDropDownList()))
     mtype = forms.ModelChoiceField(queryset=Mclass.objects.values_list('mtype').order_by('mtype').distinct(), empty_label='', label='材料分类', widget=forms.Select(attrs={'id': 'mtype', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
     mclass = forms.ModelChoiceField(queryset=Mclass.objects.values_list('mclass').order_by('mclass').distinct(), empty_label='', label='材料小类', widget=forms.Select(attrs={'id': 'mclass', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
     mname = forms.CharField(label='材料名称', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'mname', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
@@ -27,12 +26,11 @@ class InStoreForm(forms.Form):
     buyer = forms.CharField(label='采购人', max_length=128, strip=True, widget=forms.TextInput(attrs={'id':'buyer', 'class': 'form-control', 'style':"width:180px", 'value': ''}))
     inspector = forms.CharField(label='验收员', max_length=128, strip=True, widget=forms.TextInput(attrs={'id':'inspector', 'class': 'form-control', 'style':"width:180px", 'value': ''}))
     storeloc = forms.CharField(required=False, label='仓库', max_length=128, widget=forms.TextInput(attrs={'id':'storeloc', 'class': 'form-control', 'style':"width:180px", 'value': ''}))
-    # project = forms.CharField(label='所属项目', max_length=128, strip=True, widget=forms.TextInput(attrs={'id':'project', 'class': 'form-control', 'style':"width:180px", 'value':''}))
     project = forms.CharField(label='所属项目', max_length=128, strip=True, widget=forms.Select(attrs={'id': 'project', 'class': 'form-control', 'style': "width:180px", 'value': ''}, choices=Project().getProjectDropDownList()))
-
     provider = forms.CharField(label='供应商', max_length=128, strip=True, widget=forms.TextInput(attrs={'id':'provider', 'class': 'form-control', 'style':"width:180px", 'value':''}))
     remark = forms.CharField(required=False, label='备注', max_length=256, widget=forms.Textarea(attrs={'id':'remark', 'class': 'form-control', 'style':"width:180px; height:60px", 'value':''}))
-    
+
+
 class OutStoreForm(forms.Form):
     id = forms.IntegerField(required=False, )
     date = forms.DateField(label='出库日期', widget=forms.DateInput(attrs={'id':'date','type':'date', 'class': 'form-control', 'style':"width:180px",}))
