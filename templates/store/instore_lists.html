@@ -236,6 +236,8 @@
 <script src="{% static 'AdminLTE/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
 <script src="{% static 'AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
 <script>
+    import fa from "../../static/AdminLTE/bower_components/moment/src/locale/fa";
+
     function send_data(){
         const receiptNo = trim($('input#c_receiptNo')[0].value);
         const m_type = trim($('input#c_m_type')[0].value);
@@ -433,10 +435,10 @@
     });
 	
 	$('select#mtype').change(function () {
-        const m_type_s = $(this)
+        const m_type_s = $(this).find('option:selected').text()
         let send = {
             csrfmiddlewaretoken: '{{ csrf_token }}',
-            m_type: '主要材料'
+            m_type: m_type_s
         }
         $.ajax({
             url:"{% url 'mclass:m_data' %}",
@@ -444,7 +446,42 @@
             type: "POST",
             data: send,
             success: function (data) {
-                alert(data)
+                let sele_mclass_ops = $('select#mclass')
+                sele_mclass_ops.empty();
+                for(let i = 0; i < data.length; i++ ){
+                    d = data[i]
+                    var objOption = document.createElement("OPTION");
+                    objOption.text = d['mclass'];
+                    objOption.value = d['mclass'];
+                    sele_mclass_ops.append(objOption);
+                }
+
+            }
+        })
+    });
+
+	$('select#mclass').change(function () {
+        const m_class_s = $(this).find('option:selected').text()
+        let send = {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            m_class: m_class_s
+        }
+        $.ajax({
+            url:"{% url 'mclass:m_data' %}",
+            async : false,
+            type: "POST",
+            data: send,
+            success: function (data) {
+                let sele_mtype_ops = $('select#mtype')
+                sele_mtype_ops.empty();
+                for(let i = 0; i < data.length; i++ ){
+                    let d = data[i]
+                    let objOption = document.createElement("OPTION");
+                    objOption.text = d['mtype'];
+                    objOption.value = d['mtype'];
+                    sele_mtype_ops.append(objOption);
+                }
+
             }
         })
     });

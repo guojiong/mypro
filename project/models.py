@@ -19,4 +19,4 @@ class Project(models.Model):
         verbose_name_plural = '项目'
 
     def getProjectDropDownList(self):
-        return tuple([(0, '无')] + list(Project.objects.values_list('id', 'name').distinct()))
+        return tuple([(0, '')] + list(Project.objects.values_list('id', 'name').distinct()))
