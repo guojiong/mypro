@@ -62,5 +62,8 @@ def q_in_store_by_store_id(request):
         s = Store.objects.filter(id=store_ids)
         in_store = InStore.objects.values().filter(project=s[0].project, mtype=s[0].mtype, mclass=s[0].mclass, mname=s[0].mname, specifi=s[0].specifi)
         if in_store:
-            re_list = list(in_store)
+            for tmp in in_store:
+                project = Project.objects.values().filter(id=tmp['project_id'])
+                tmp['project'] = project[0]
+                re_list.append(tmp)
     return JsonResponse(re_list, safe=False)

@@ -34,22 +34,17 @@ def outstore_save(request):
 def out_store_query(request):
     out_No = request.POST.get('out_No')
     m_name = request.POST.get('m_name')
+    searchCondition = dict()
     outs = []
     re_data = []
     if out_No:
-        outs = OutStore.objects.values().filter(outNo=out_No)
-        if outs and m_name:     # 材料名称不为空， 且存在出库单号
-            m_list = Store.objects.values('id').filter(mname__contains=m_name)
-            if m_list:          # 根据材料名称查询结果不为空，则根据库存id过滤
-                outs = outs.filter(store_id__in=m_list)
-            else:               # 否则查询结果为空
-                outs = []
-    elif m_name:
+        searchCondition['outNo'] = out_No
+    if m_name:
         m_list = Store.objects.values('id').filter(mname__contains=m_name)
         if m_list:
-            outs = OutStore.objects.values().filter(store__in=m_list)
-    else:
-        outs = OutStore.objects.values().all()
+            searchCondition['store_id__in'] = m_list
+
+    outs = OutStore.objects.values().filter(**searchCondition)
     if outs:
         out_data = list(outs)
         for d in out_data:

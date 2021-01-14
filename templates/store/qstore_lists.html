@@ -167,7 +167,7 @@
 				    <h4 class="modal-title">查看入库单</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="box-body" style="height: 500px">
+                    <div class="box-body" style="height: 400px">
                         <table id="in_store_table" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -292,7 +292,7 @@
                 {data: 'unit' },
                 {data: 'materialfee' },
                 {data: 'inspector' },
-                {data: null },
+                {data: 'project.name' },
                 {data: 'provider' },
                 {data: 'remark' },
             ]
@@ -300,6 +300,7 @@
         });
 	function in_modal(storeid){
 	    in_store_by_id['id'] = storeid
+        $("#in-modal tbody").empty()
         ins_table.ajax.reload();
 		$("#in-modal").modal();
 	}
