@@ -52,13 +52,36 @@
                             </div>
                         </div>
                         <div>
-                            <div class="form-group col-lg-5" ></div>
-                            <div class="form-group col-lg-2" >
-                                <button type="button" class="btn btn-default col-sm-5" id="q_btn">查询</button>
-                                <span class="col-sm-2"></span>
-                                <button type="reset" class="btn btn-default col-sm-5">重置</button>
+                            <div class="form-group col-sm-3">
+                                <label for="c_reciTeam" class="col-sm-4 control-label">自用/班组：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_reciTeam" placeholder="自用/班组">
+                                </div>
                             </div>
-                            <div class="form-group col-lg-5" ></div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_start" class="col-sm-4 control-label">开始时间：</label>
+                                <div class="col-sm-8">
+                                    <input type="date" class="form-control" id="c_start" placeholder="开始时间">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_end" class="col-sm-4 control-label">结束时间：</label>
+                                <div class="col-sm-8">
+                                    <input type="date" class="form-control" id="c_end" placeholder="结束时间">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3"></div>
+                        </div>
+                        <div>
+                            <div class="form-group col-lg-4" ></div>
+                            <div class="form-group col-lg-4" >
+                                <button type="button" class="btn btn-default col-sm-3" id="q_btn">查询</button>
+                                <span class="col-sm-1"></span>
+                                <button type="reset" class="btn btn-default col-sm-3">重置</button>
+                                <span class="col-sm-1"></span>
+							<button type="export" class="btn btn-default col-sm-3" id="export">导出</button>
+                            </div>
+                            <div class="form-group col-lg-4" ></div>
                         </div>
                     </div>
 					<!-- /.box-body -->
@@ -75,8 +98,10 @@
 							<th>材料名称</th>
 							<th class="col-lg-1" style="width: 115px">品牌/规格/型号</th>
 							<th>数量</th>
+							<th>扣款金额</th>
 							<th>单位</th>
-							<th>出库去向</th>
+							<th>工程部位</th>
+							<th>自用/班组</th>
 							<th>领用人</th>
 							<th>所属项目</th>
 							<th>备注</th>
@@ -100,10 +125,11 @@
         const m_type = trim($('input#c_m_type')[0].value);
         const m_class = trim($('input#c_m_class')[0].value);
 		const m_name = trim($('input#c_m_name')[0].value);
+		const reciTeam = trim($('input#c_reciTeam')[0].value);
 		let data = {csrfmiddlewaretoken:'{{csrf_token}}'};
 
 		if (outNo!=''){
-			data['m_type'] = outNo;
+			data['out_No'] = outNo;
 		}
 		if (m_type!=''){
 			data['m_type'] = m_type;
@@ -113,6 +139,9 @@
 		}
 		if (m_name!=''){
 			data['m_name'] = m_name;
+		}
+		if (reciTeam!=''){
+			data['reciTeam'] = reciTeam;
 		}
         return data;
     }
@@ -126,6 +155,7 @@
         "ajax":{
 			url:'{% url "store:out_data" %}',
 			type:'POST',
+            async : false,
 			data:function(){
 				let e=c_data();
 				return e;
@@ -139,8 +169,10 @@
             { data: 'store.mname' },
             { data: 'store.specifi' },
             { data: 'num' },
+            { data: 'demount' },
             { data: 'store.unit' },
             { data: 'toWhere' },
+            { data: 'reciTeam' },
             { data: 'receiver' },
             { data: 'store.project.name' },
             { data: 'remark' },
@@ -153,6 +185,10 @@
 
 	$('#q_btn').click(function(){
         s_table.ajax.reload();
+    });
+
+    $('#export').click(function () {
+        alert("-----------------正在开发中-----------------")
     });
     
 </script>

@@ -47,6 +47,8 @@
 							<button type="button" class="btn btn-default col-sm-3" id="q_btn">查询</button>
 							<span class="col-sm-1"></span>
 							<button type="reset" class="btn btn-default col-sm-3">重置</button>
+                            <span class="col-sm-1"></span>
+							<button type="export" class="btn btn-default col-sm-3" id="export">导出</button>
 						</div>
                     </div>
 					<!-- /.box-body -->
@@ -117,6 +119,10 @@
 								</div>
 							</div>
 							<div class="form-group">
+                                <div class="form-group col-lg-4">
+									{{ store_form.unit|label_with_classes:'col-xs-5 control-label' }}
+									{{ store_form.unit }}
+								</div>
 								<div class="form-group col-lg-4">
 							  		{{ store_form.outNo|label_with_classes:'col-xs-5 control-label' }}
 							  		{{ store_form.outNo }}
@@ -125,17 +131,22 @@
 									{{ store_form.toWhere|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.toWhere }}
 								</div>
+							</div>
+							<div class="form-group">
 								<div class="form-group col-lg-4 form-horizontal">
 									{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.num }}
 								</div>
-							</div>
-							<div class="form-group">
-								<div class="form-group col-lg-4">
-									{{ store_form.unit|label_with_classes:'col-xs-5 control-label' }}
-									{{ store_form.unit }}
+                                <div class="form-group col-lg-4">
+									{{ store_form.demount|label_with_classes:'col-xs-5 control-label' }}
+									{{ store_form.demount }}
 								</div>
 								<div class="form-group col-lg-4">
+									{{ store_form.reciTeam|label_with_classes:'col-xs-5 control-label' }}
+									{{ store_form.reciTeam }}
+								</div>
+							</div><div class="form-group">
+                                 <div class="form-group col-lg-4">
 									{{ store_form.receiver|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.receiver }}
 								</div>
@@ -396,6 +407,8 @@
 		const outNo = $('div#modal-outstore input#outNo')[0].value;
 		const toWhere = $('div#modal-outstore input#toWhere')[0].value;
 		const num = $('div#modal-outstore input#num')[0].value;
+		const demount = $('div#modal-outstore input#demount')[0].value;
+		const reciTeam = $('div#modal-outstore input#reciTeam')[0].value;
 		const receiver = $('div#modal-outstore input#receiver')[0].value;
 		const remark = $('div#modal-outstore textarea#remark')[0].value;
 		$.ajax({
@@ -408,6 +421,8 @@
 				'outNo':outNo,
 				'toWhere':toWhere,
 				'num':num,
+				'demount':demount,
+				'reciTeam':reciTeam,
 				'receiver':receiver,
 				'remark':remark,
 			},
@@ -415,10 +430,12 @@
 		});
 	}
 
-
-    
 	$("#savebtn").click(function(){
 		save();				
+    });
+
+    $('#export').click(function () {
+        alert("-----------------正在开发中-----------------")
     });
 </script>
 {% endblock js %}

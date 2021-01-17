@@ -61,6 +61,8 @@ class OutStore(models.Model):
     toWhere = models.CharField(max_length=128, verbose_name='出库去向')
     store = models.ForeignKey(to=Store, on_delete=models.CASCADE, verbose_name='库存id')
     num = models.IntegerField(verbose_name='数量')
+    demount = models.CharField(max_length=128, verbose_name='扣款金额')
+    reciTeam = models.CharField(max_length=128, verbose_name='自用/班组')
     receiver = models.CharField(max_length=128, verbose_name='领用人')
     remark = models.TextField(max_length=256, verbose_name='备注', null=True, blank=True)
     

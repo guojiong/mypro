@@ -52,6 +52,27 @@
                             </div>
                         </div>
                         <div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_provider" class="col-sm-4 control-label">供货单位：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="c_provider" placeholder="供货单位">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_start" class="col-sm-4 control-label">开始时间：</label>
+                                <div class="col-sm-8">
+                                    <input type="date" class="form-control" id="c_start" placeholder="开始时间">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="c_end" class="col-sm-4 control-label">结束时间：</label>
+                                <div class="col-sm-8">
+                                    <input type="date" class="form-control" id="c_end" placeholder="结束时间">
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-3"></div>
+                        </div>
+                        <div>
                             <div class="form-group col-lg-4" ></div>
                             <div class="form-group col-lg-4" >
                                 <button type="button" class="btn btn-default col-sm-3" id="q_btn">查询</button>
@@ -80,7 +101,7 @@
 							<th>材料费</th>
 							<th>验收员</th>
 							<th class="col-lg-1" >所属项目</th>
-							<th class="col-lg-1" >供应商</th>
+							<th class="col-lg-1" >供货单位</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -269,6 +290,7 @@
         ajax: {
             url: "{% url 'store:in_data' %}",
             type: "POST",
+            async : false,
             data: function () {
                 let e = send_data();
                 return e;

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    <title>总表</title>
+{% endblock title %}
+{% block navheader %}
+<section class="content-header">
+	<h1 style="height: 0px">
+	总表
+	<small>Control panel</small>
+	</h1>
+	<ol class="breadcrumb">
+		<li><a href="#"><i class="fa fa-dashboard"></i> 总表</a></li>
+	</ol>
+</section>
+{% endblock navheader %}
+{% block content %}
+    <section class="content">
+
+        <div class="row">
+            <div class="box">
+                <div class="box-header">
+                    <form class="form-horizontal">
+                        <div class="form-group col-sm-3">
+                            <label for="c_month" class="col-sm-4 control-label">月度：</label>
+                            <div class="col-sm-8">
+                                <input type="month" class="form-control" id="c_month">
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-3">
+                            <div class="col-sm-8">
+                                <button class="btn btn-warning" type="button" id="q_submit">执行</button>
+                                <button class="btn btn-default" type="button" onclick="reset_date()">重置</button>
+                                <button class="btn btn-primary" type="button" id="q_print" onclick="preview(1)">打印报表</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!--startprint1-->
+                <!--打印内容开始-->
+                <div class="box-body"></div>
+                <!--打印内容结束-->
+                <!--endprint1-->
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+{% block js %}
+    <script>
+        let time = new Date()
+        {#let day = ('0' + time.getDate()).slice(-2)#}
+        let month = ('0' + (time.getMonth() + 1)).slice(-2)
+        let today = time.getFullYear() + '-' + month
+        $('#c_month').val(today)
+        {#let date = $('div#modal-store input#c_month')[0];#}
+        {#date.valueAsDate = new Date(year, month);#}
+
+        let html = '{{ Content }}'
+        html = html.replaceAll('&lt;', '<')
+        html = html.replaceAll('&quot;', '"')
+        html = html.replaceAll('&gt;', '>')
+        $('.box-body').html(html)
+        {% comment %}alert(html){% endcomment %}
+
+    function preview(oper) {
+        if (oper < 10) {
+            const bdhtml = window.document.body.innerHTML; //获取当前页的html代码
+            let sprnstr = "<!--startprint" + oper + "-->"; //设置打印开始区域
+            let eprnstr = "<!--endprint" + oper + "-->"; //设置打印结束区域
+            let prnhtml = bdhtml.substring(bdhtml.indexOf(sprnstr) + 18); //从开始代码向后取html
+            prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr)); //从结束代码向前取html
+            window.document.body.innerHTML = prnhtml;
+            window.print();
+            window.document.body.innerHTML = bdhtml;
+        } else {
+            window.print();
+        }
+    }
+
+    function reset_date(){
+        let time = new Date()
+        let month = ('0' + (time.getMonth() + 1)).slice(-2)
+        let today = time.getFullYear() + '-' + month
+        $('#c_month').val(today)
+    }
+    </script>
+{% endblock js %}
