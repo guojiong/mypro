@@ -21,13 +21,13 @@
             <div class="box">
                 <div class="box-header">
                     <form class="form-horizontal">
-                        <div class="form-group col-sm-3">
+                        <div class="form-group col-sm-4">
                             <label for="c_month" class="col-sm-4 control-label">月度：</label>
                             <div class="col-sm-8">
                                 <input type="month" class="form-control" id="c_month">
                             </div>
                         </div>
-                        <div class="form-group col-sm-3">
+                        <div class="form-group col-sm-6">
                             <div class="col-sm-8">
                                 <button class="btn btn-warning" type="button" id="q_submit">执行</button>
                                 <button class="btn btn-default" type="button" onclick="reset_date()">重置</button>
@@ -47,41 +47,65 @@
 {% endblock content %}
 {% block js %}
     <script>
-        let time = new Date()
-        {#let day = ('0' + time.getDate()).slice(-2)#}
-        let month = ('0' + (time.getMonth() + 1)).slice(-2)
-        let today = time.getFullYear() + '-' + month
-        $('#c_month').val(today)
-        {#let date = $('div#modal-store input#c_month')[0];#}
-        {#date.valueAsDate = new Date(year, month);#}
+        $(function () {
+            // 设置默认时间
+            let time = new Date();
+            let month = ('0' + (time.getMonth() + 1)).slice(-2);
+            let today = time.getFullYear() + '-' + month;
+            $('#c_month').val(today);
 
-        let html = '{{ Content }}'
-        html = html.replaceAll('&lt;', '<')
-        html = html.replaceAll('&quot;', '"')
-        html = html.replaceAll('&gt;', '>')
-        $('.box-body').html(html)
-        {% comment %}alert(html){% endcomment %}
+            // 加载页面
+            {#let html = '{{ Content }}';#}
+            {#html = html.replaceAll('&lt;', '<').replaceAll('&quot;', '"').replaceAll('&gt;', '>');#}
+            {#$('.box-body').html(html)#}
+            get_report();
+        });
 
-    function preview(oper) {
-        if (oper < 10) {
-            const bdhtml = window.document.body.innerHTML; //获取当前页的html代码
-            let sprnstr = "<!--startprint" + oper + "-->"; //设置打印开始区域
-            let eprnstr = "<!--endprint" + oper + "-->"; //设置打印结束区域
-            let prnhtml = bdhtml.substring(bdhtml.indexOf(sprnstr) + 18); //从开始代码向后取html
-            prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr)); //从结束代码向前取html
-            window.document.body.innerHTML = prnhtml;
-            window.print();
-            window.document.body.innerHTML = bdhtml;
-        } else {
-            window.print();
+        // 打印
+        function preview(oper) {
+            if (oper < 10) {
+                const bdhtml = window.document.body.innerHTML; //获取当前页的html代码
+                let sprnstr = "<!--startprint" + oper + "-->"; //设置打印开始区域
+                let eprnstr = "<!--endprint" + oper + "-->"; //设置打印结束区域
+                let prnhtml = bdhtml.substring(bdhtml.indexOf(sprnstr) + 18); //从开始代码向后取html
+                prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr)); //从结束代码向前取html
+                window.document.body.innerHTML = prnhtml;
+                window.print();
+                window.document.body.innerHTML = bdhtml;
+            } else {
+                window.print();
+            }
         }
-    }
 
-    function reset_date(){
-        let time = new Date()
-        let month = ('0' + (time.getMonth() + 1)).slice(-2)
-        let today = time.getFullYear() + '-' + month
-        $('#c_month').val(today)
-    }
+        //重置按钮
+        function reset_date(){
+            let time = new Date()
+            let month = ('0' + (time.getMonth() + 1)).slice(-2)
+            let today = time.getFullYear() + '-' + month
+            $('#c_month').val(today)
+        }
+
+        // 执行
+        $('#q_submit').click(function () {
+            get_report();
+        });
+
+        // 请求报表
+        function get_report() {
+            let data = {csrfmiddlewaretoken: '{{ csrf_token }}'};
+            const year_month = $('#c_month').val();
+            data['year_month'] = year_month;
+            $.ajax({
+                url: "{% url 'reports:t_data' %}",
+                type: "POST",
+                async: false,
+                data: data,
+                success: function (html) {
+                    {#html = html.replaceAll('&lt;', '<').replaceAll('&quot;', '"').replaceAll('&gt;', '>');#}
+                    html = html['Content']
+                    $('.box-body').html(html)
+                }
+            });
+        }
     </script>
 {% endblock js %}

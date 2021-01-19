@@ -1,12 +1,19 @@
-
+from django.http import JsonResponse
 from django.shortcuts import render
 from HTMLTable import HTMLTable
 
 
 # Create your views here.
+
+def totals_page(request):
+    return render(request, 'reports/totals.html')
+
+
 def totals_report(request):
+    year_month = request.POST.get('year_month')
+
     # 报表标题
-    title = '重庆明珠建设（集团）有限公司 %d 月材料报表' % 1
+    title = '重庆明珠建设（集团）有限公司 %s 月材料报表' % year_month
     table_head = HTMLTable(caption=title)
     table_head.append_data_rows((
         ('单位：', '泸州项目', '', '', '', '', '', '', '', '单位：', '元'),
@@ -211,4 +218,4 @@ def totals_report(request):
 
     html = table_head.to_html() + table_body.to_html() + table_footer.to_html()
     # return HttpResponse(html)
-    return render(request, 'reports/totals.html', {'Content': html})
+    return JsonResponse({'Content': html}, safe=False)
