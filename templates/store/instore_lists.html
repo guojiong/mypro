@@ -160,15 +160,14 @@
 							  		{{store_form.specifi |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.specifi}}
 								</div>
+                                <div class="form-group col-lg-4">
+							  		{{store_form.unit |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.unit}}
+								</div>
 								<div class="form-group col-lg-4">
 							  		{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.num}}
 								</div>
-								<div class="form-group col-lg-4">
-							  		{{store_form.unit |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.unit}}
-								</div>
-
 							</div>
 							<div class="form-group">
                                 <div class="form-group col-lg-4">
@@ -176,14 +175,13 @@
 									{{store_form.materialfee}}
 								</div>
 								<div class="form-group col-lg-4">
-							  		{{ store_form.price|label_with_classes:'col-xs-5 control-label' }}
-							 		{{store_form.price}}
-								</div>
-								<div class="form-group col-lg-4">
 							  		{{store_form.rate|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.rate}}
 								</div>
-
+                                <div class="form-group col-lg-4">
+							  		{{ store_form.price|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.price}}
+								</div>
 							</div>
 							<div class="form-group">
                                 <div class="form-group col-lg-4">
@@ -295,7 +293,7 @@
                 let e = send_data();
                 return e;
             },
-            dataSrc: ''
+            dataSrc: 'instores'
         },
         columns: [
             {data: 'date'},
@@ -351,8 +349,8 @@
     function save(id){
     	const date = $('div#modal-store input#date')[0].value;
     	const receiptNo = $('div#modal-store input#receiptNo')[0].value;
-    	const mtype = $('div#modal-store input#mtype')[0].value;
-    	const mclass = $('div#modal-store input#mclass')[0].value;
+    	const mtype = $('div#modal-store select#mtype')[0].value;
+    	const mclass = $('div#modal-store select#mclass')[0].value;
     	const mname = $('div#modal-store input#mname')[0].value;
     	const specifi = $('div#modal-store input#specifi')[0].value;
     	const num = $('div#modal-store input#num')[0].value;
@@ -376,8 +374,8 @@
 				'id':id,
 				'date':date,
 				'receiptNo':receiptNo,
-				'mtype':mtype,
-				'mclass':mclass,
+				'mtype': '(\'' + mtype + '\',)',
+				'mclass': '(\'' +mclass + '\',)',
 				'mname':mname,
 				'specifi':specifi,
 				'num':num,
@@ -394,6 +392,9 @@
 				'remark':remark,
 			},
 			success:succFunction,
+            error: function () {
+
+            }
 		});
 	}
 
@@ -436,18 +437,29 @@
 			}
 			let date = $('div#modal-store input#date')[0];
 			date.valueAsDate = new Date();
-			let m_type = $('div#modal-store select#mtype')[0];
+			let m_type = $('div#modal-store input#mtype')[0];
 			let m_type_ops = m_type.options
+            $.ajax({
+                url: "{% url 'mclass:m_data' %}",
+                type: "POST",
+                async: false,
+                data: "{csrfmiddlewaretoken: 'csrf_tokent'}",
+                success: function (data) {
+                    for (let i=0; i<data.size; i++){
+                        // TODO
+                    }
+                }
+            })
             for( let i=0; i < m_type_ops.length; i++){
-                let op_name = m_type_ops[i].innerHTML.replace('(\'', '').replace('\',)','');
-                m_type_ops[i].outerHTML = '<option value="' + op_name + '">' + op_name + '</option>';
+                let op_name = m_type_ops[i].innerText.replace('(\'', '').replace('\',)','');
+                m_type_ops[i].innerText = op_name;
             }
             let m_class = $('div#modal-store select#mclass')[0];
 			let m_class_ops = m_class.options
             for( let i=0; i < m_class_ops.length; i++){
                 // m_class_ops[i].innerHTML = m_class_ops[i].innerHTML.replace('(\'', '').replace('\',)','');
-                let op_name = m_class_ops[i].innerHTML.replace('(\'', '').replace('\',)','');
-                m_class_ops[i].outerHTML = '<option value="' + op_name + '">' + op_name + '</option>';
+                let op_name = m_class_ops[i].innerText.replace('(\'', '').replace('\',)','');
+                m_class_ops[i].innerText = op_name;
             }
 			$("#modal-store").modal();
 		}
@@ -477,7 +489,7 @@
                     d = data[i]
                     var objOption = document.createElement("OPTION");
                     objOption.text = d['mclass'];
-                    objOption.value = d['mclass'];
+                    objOption.value = '(\'' + d['mclass'] + '\',)';
                     sele_mclass_ops.append(objOption);
                 }
 
@@ -501,15 +513,24 @@
                     $(this).attr("selected",false);
                 });
                 $('select#mtype').find("option:contains('" + data[0]['mtype'] + "')").attr("selected",true);
-                //this.$forceUpdate()
-                //$.parser.parse($('select#mtype'))
-                //$('select#mtype').refresh();
-                //$('select#mtype').reload();
                 $('select#mtype').attr('src',$('select#mtype').attr('src'));
-                //$('select#mtype').trigger("change");
-
             }
         })
+    });
+
+	$('#materialfee').change(function () {
+	    const material_fee = $('#materialfee').val();
+	    const num = $('#num').val();
+	    const rate = $('#rate').val();
+        if (material_fee!='' & num!='' & rate!=''){
+            let rate_fee = (parseFloat(material_fee)*parseFloat(rate))/(1+parseFloat(rate));
+            const price = (material_fee - rate_fee)/parseFloat(num)
+            {#$('#price').val(price.toFixed(2))#}
+            $('#price').val(Math.round(price*100)/100)
+        }else{
+            return
+        }
+
     });
 </script>
 {% endblock js %}

@@ -1,4 +1,9 @@
+import json
+
+from django.core import serializers
 from django.shortcuts import render
+
+from mclass.models import Mclass
 from store.forms import InStoreForm, OutStoreForm
 from store.models import InStore, OutStore, Store
 from django.http.response import JsonResponse
@@ -26,13 +31,14 @@ def instore_save(request):
         data['project'] = projectobj[0]
         if ids:
             InStore.objects.filter(id=ids).update(**data)
-            return JsonResponse({'status': 200, 'msg':'更新成功'})
+            return JsonResponse({'status': 200, 'msg': '更新成功'})
         else:
             store = InStore.objects.filter(receiptNo=receiptNo)
             if store:
                 return JsonResponse({'status': 500, 'msg': '该采购单已入库！不能重复入库'})
             InStore.objects.create(**data)
             return JsonResponse({'status': 200, 'msg': '新增成功'})
+    print(instore_form.errors)
     return JsonResponse({'status': 500, 'msg': instore_form.errors})
 
 
@@ -41,6 +47,7 @@ def in_store_data(request):
     m_type = request.POST.get('m_type')
     m_class = request.POST.get('m_class')
     m_name = request.POST.get('m_name')
+    result = {}
     re_list = []
     searchCondition = {}
     if m_type:
@@ -57,5 +64,7 @@ def in_store_data(request):
             p = Project.objects.values().filter(id=in_store['project_id'])
             in_store['project'] = p[0]
             re_list.append(in_store)
-
-    return JsonResponse(re_list, safe=False)
+    result = {
+        'instores': re_list
+    }
+    return JsonResponse(result)

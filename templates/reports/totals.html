@@ -31,16 +31,12 @@
                             <div class="col-sm-8">
                                 <button class="btn btn-warning" type="button" id="q_submit">执行</button>
                                 <button class="btn btn-default" type="button" onclick="reset_date()">重置</button>
-                                <button class="btn btn-primary" type="button" id="q_print" onclick="preview(1)">打印报表</button>
+                                <button class="btn btn-primary" type="button" id="q_print" onclick="preview()">打印报表</button>
                             </div>
                         </div>
                     </form>
                 </div>
-                <!--startprint1-->
-                <!--打印内容开始-->
-                <div class="box-body"></div>
-                <!--打印内容结束-->
-                <!--endprint1-->
+                <div id="printcontent" class="box-body"></div>
             </div>
         </div>
     </section>
@@ -55,25 +51,28 @@
             $('#c_month').val(today);
 
             // 加载页面
-            {#let html = '{{ Content }}';#}
-            {#html = html.replaceAll('&lt;', '<').replaceAll('&quot;', '"').replaceAll('&gt;', '>');#}
-            {#$('.box-body').html(html)#}
             get_report();
         });
 
         // 打印
         function preview(oper) {
-            if (oper < 10) {
-                const bdhtml = window.document.body.innerHTML; //获取当前页的html代码
-                let sprnstr = "<!--startprint" + oper + "-->"; //设置打印开始区域
-                let eprnstr = "<!--endprint" + oper + "-->"; //设置打印结束区域
-                let prnhtml = bdhtml.substring(bdhtml.indexOf(sprnstr) + 18); //从开始代码向后取html
-                prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr)); //从结束代码向前取html
-                window.document.body.innerHTML = prnhtml;
-                window.print();
-                window.document.body.innerHTML = bdhtml;
-            } else {
-                window.print();
+            //判断iframe是否存在，不存在则创建iframe
+            let iframe=document.getElementById("print-iframe");
+            if (!iframe) {
+                const el = document.getElementById("printcontent");
+                iframe = document.createElement('IFRAME');
+                let doc = null;
+                iframe.setAttribute("id", "print-iframe")
+                iframe.setAttribute('style', 'position:absolute; width:0px;height:0px;left:-500px;top:-500px;');
+                document.body.appendChild(iframe);
+                doc = iframe.contentWindow.document;
+                doc.write(el.innerHTML);
+                doc.close();
+                iframe.contentWindow.focus();
+            }
+            iframe.contentWindow.print()
+            if (navigator.userAgent.indexOf("MSIE") > 0){
+                document.body.removeChild(iframe);
             }
         }
 
