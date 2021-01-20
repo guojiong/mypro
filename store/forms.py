@@ -21,7 +21,7 @@ class InStoreForm(forms.Form):
     unit = forms.CharField(label='单位', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'unit', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
     factory = forms.CharField(required=False, label='厂家名称', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'factory', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
     materialfee = forms.CharField(label='材料费', max_length=128, strip=True, widget=forms.TextInput(attrs={'id':'materialfee', 'type': 'number', 'min': "0", 'class': 'form-control', 'style':"width:180px", 'value': ''}))
-    price = forms.CharField(label='税后单价', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'price', 'type': 'number', 'min': "0", 'class': 'form-control', 'style': "width:180px", 'value': '', 'readonly': 'true'}))
+    price = forms.CharField(label='税后单价', max_length=10, strip=True, widget=forms.TextInput(attrs={'id': 'price', 'type': 'number', 'min': "0", 'class': 'form-control', 'style': "width:180px", 'value': '', 'readonly': 'true'}))
     rate = forms.CharField(required=False, label='税率', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'rate', 'type': 'number', 'min': "0", 'max': "1", 'step': "0.01", 'class': 'form-control', 'style':"width:180px", 'value': ''}))
     buyer = forms.CharField(label='采购人', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'buyer', 'class': 'form-control', 'style': "width:180px", 'value': ''}))
     inspector = forms.CharField(label='验收员', max_length=128, strip=True, widget=forms.TextInput(attrs={'id': 'inspector', 'class': 'form-control', 'style':"width:180px", 'value': ''}))

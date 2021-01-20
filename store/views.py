@@ -63,6 +63,7 @@ def in_store_data(request):
         for in_store in tmp:
             p = Project.objects.values().filter(id=in_store['project_id'])
             in_store['project'] = p[0]
+            in_store['mtype_mclass'] = in_store['mtype'] + ' > ' + in_store['mclass']
             re_list.append(in_store)
     result = {
         'instores': re_list

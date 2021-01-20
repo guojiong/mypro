@@ -11,6 +11,7 @@ class Store(models.Model):
     mname = models.CharField(max_length=128, verbose_name='材料名称')
     specifi = models.CharField(max_length=128, verbose_name='品牌/规格/型号')
     num = models.IntegerField(verbose_name='数量')
+    price = models.CharField(max_length=10, verbose_name='税后单价')
     unit = models.CharField(max_length=128, verbose_name='单位')
     
     def __str__(self):
@@ -36,7 +37,7 @@ class InStore(models.Model):
     rate = models.CharField(max_length=128, verbose_name='税率', null=True, blank=True)
     factory = models.CharField(max_length=128, verbose_name='厂家名称', null=True, blank=True)
     materialfee = models.CharField(max_length=128, verbose_name='材料费')
-    price = models.CharField(max_length=128, verbose_name='税后单价')
+    price = models.CharField(max_length=10, verbose_name='税后单价')
     buyer = models.CharField(max_length=128, verbose_name='采购员')
     inspector = models.CharField(max_length=128, verbose_name='验收员')
     storeloc = models.CharField(max_length=128, verbose_name='仓库', null=True, blank=True)

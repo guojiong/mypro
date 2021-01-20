@@ -64,6 +64,7 @@
 							<th>材料名称</th>
 							<th>品牌/规格/型号</th>
 							<th>数量</th>
+                            <th>税后单价</th>
 							<th>单位</th>
 							<th class="col-lg-1" style="min-width: 180px">操作</th>
 						</tr>
@@ -356,6 +357,7 @@
             {data: 'mname' },
             {data: 'specifi' },
             {data: 'num' },
+            {data: 'price' },
             {data: 'unit' },
             {data: null, render: function (data) {
                 let id = data['id']
