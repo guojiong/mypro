@@ -25,7 +25,7 @@ def instore_save(request):
         ids = instore_form.cleaned_data.get('id')
         receiptNo = instore_form.cleaned_data.get('receiptNo')
         project = instore_form.cleaned_data.get('project')
-        projectobj = Project.objects.filter(name=project)
+        projectobj = Project.objects.filter(id=project)
         if projectobj.__len__() == 0:
             return JsonResponse({'status': 500, 'msg': '所属项目不存在' })
         data['project'] = projectobj[0]

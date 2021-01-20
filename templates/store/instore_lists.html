@@ -374,8 +374,8 @@
 				'id':id,
 				'date':date,
 				'receiptNo':receiptNo,
-				'mtype': '(\'' + mtype + '\',)',
-				'mclass': '(\'' +mclass + '\',)',
+				'mtype': mtype,
+				'mclass': mclass,
 				'mname':mname,
 				'specifi':specifi,
 				'num':num,
@@ -437,19 +437,8 @@
 			}
 			let date = $('div#modal-store input#date')[0];
 			date.valueAsDate = new Date();
-			let m_type = $('div#modal-store input#mtype')[0];
+			let m_type = $('div#modal-store select#mtype')[0];
 			let m_type_ops = m_type.options
-            $.ajax({
-                url: "{% url 'mclass:m_data' %}",
-                type: "POST",
-                async: false,
-                data: "{csrfmiddlewaretoken: 'csrf_tokent'}",
-                success: function (data) {
-                    for (let i=0; i<data.size; i++){
-                        // TODO
-                    }
-                }
-            })
             for( let i=0; i < m_type_ops.length; i++){
                 let op_name = m_type_ops[i].innerText.replace('(\'', '').replace('\',)','');
                 m_type_ops[i].innerText = op_name;
@@ -489,7 +478,7 @@
                     d = data[i]
                     var objOption = document.createElement("OPTION");
                     objOption.text = d['mclass'];
-                    objOption.value = '(\'' + d['mclass'] + '\',)';
+                    objOption.value = d['mclass'];
                     sele_mclass_ops.append(objOption);
                 }
 
