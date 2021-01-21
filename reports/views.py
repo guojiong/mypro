@@ -1,9 +1,12 @@
+from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render
 from HTMLTable import HTMLTable
 
 
 # Create your views here.
+from mclass.models import Mclass
+
 
 def totals_page(request):
     return render(request, 'reports/totals.html')
@@ -68,44 +71,56 @@ def totals_report(request):
     table_body[0][5].attr.colspan = 2
     table_body[0][7].attr.colspan = 2
     table_body[0][7].attr.colspan = 2
+    table_body[0][9].attr.rowspan = 2
+    table_body[0][10].attr.rowspan = 2
 
-    list_data = [
-        ('1', '材料', '主要材料', '钢材', 20, 12, '1', 110, 10, 20, 12),
-        ('2', '', '', '水泥', -9, 21, '1', 110, 10, 20, 12),
-        ('3', '', '', '木材', -9, 21, '1', 110, 10, 20, 12),
-        ('4', '', '', '地材', -9, 21, '1', 110, 10, 20, 12),
-        ('5', '', '', '沥青', -9, 21, '1', 110, 10, 20, 12),
-        ('6', '', '', '商混', -9, 21, '1', 110, 10, 20, 12),
-        ('7', '', '结构件', '水泥制品', -9, 21, '1', 110, 10, 20, 12),
-        ('8', '', '', '钢结构制品', -9, 21, '1', 110, 10, 20, 12),
-        ('9', '', '', '木制品', -9, 21, '1', 110, 10, 20, 12),
-        ('7', '', '其他材料', '水电材料', -9, 21, '1', 110, 10, 20, 12),
-        ('8', '', '', '五金材料', -9, 21, '1', 110, 10, 20, 12),
-        ('9', '', '', '化工材料', -9, 21, '1', 110, 10, 20, 12),
-        ('', '', '材料小计', '', 10, 21, '1', 110, 10, 20, 12),
-        ('10', '（方）辅助材料', 50, '安全文明施工物资', 10, 21, '1', 110, 10, 20, 12),
-        ('11', '周转材料', 50, '模板', 10, 21, '1', 110, 10, 20, 12),
-        ('12', '', '', '支架', 10, 21, '1', 110, 10, 20, 12),
-        ('13', '', '', '扣件', 10, 21, '1', 110, 10, 20, 12),
-        ('14', '', '', '其他周材', 10, 21, '1', 110, 10, 20, 12),
-        ('15', '', '', '周材小计', 10, 21, '1', 110, 10, 20, 12),
-        ('16', '机械设备', 50, '机械设备', 10, 21, '1', 110, 10, 20, 12),
-        ('17', '', 50, '设备配件', 10, 21, '1', 110, 10, 20, 12),
-        ('18', '', 50, '其他配件', 10, 21, '100', 110, 10, 20, 12),
-        ('19', '', 50, '柴油', 10, 21, '100', 110, 10, 20, 12),
-        ('20', '', 50, '气油', 10, 21, '100', 110, 10, 20, 12),
-        ('21', '', 50, '机械小计', 10, 21, '100', 110, 10, 20, 12),
-        ('22', '工器具及低值易耗品', 50, '劳保用品', 10, 21, '100', 110, 10, 20, 12),
-        ('23', '', 50, '工器具', 10, 21, '100', 110, 10, 20, 12),
-        ('24', '', 50, '管理用具', 10, 21, '100', 110, 10, 20, 12),
-        ('25', '', 50, '低值易耗品', 10, 21, '100', 110, 10, 20, 12),
-        ('26', '', 50, '低耗品小计', 10, 21, '100', 110, 10, 20, 12),
-        ('27', '', '', '安全文明施工物资', 10, 21, '100', 110, 10, 20, 12),
-        ('28', '办公物资', '', '办公用品', 10, 21, '100', 110, 10, 20, 12),
-        ('29', '', '', '办公设备', 10, 21, '100', 110, 10, 20, 12),
-        ('30', '', '', '办公小计', 10, 21, '100', 110, 10, 20, 12),
-        ('合计', '', '', '', 10, 21, '100', 110, 10, 20, 12)
-    ]
+    list_data = []
+    mtype_num = Mclass.objects.values('mtype').annotate(c=Count('mclass')).values('mtype', 'c')
+    m_data = Mclass.objects.values('mtype', 'mclass').all()
+    m1 = ['主要材料', '结构件', '其他材料']
+    format_table = {}
+    report_order = 1
+    for num in mtype_num:
+        format_table[num['mtype']] = num['c']
+        if num['mtype'] in m1:
+            is_first = True
+            for m in m_data:
+                if m['mtype'] == num['mtype']:
+                    if is_first and report_order == 1:
+                        list_data.append((report_order, '材料', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
+                        is_first = False
+                    elif is_first:
+                        list_data.append((report_order, '', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
+                        num['c']
+                        is_first = False
+                    else:
+                        list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', ''))
+                    report_order = report_order + 1
+
+    for row in table_body.iter_data_rows():
+        if row[1].value == '材料':
+            row[1].attr.rowspan = report_order  # 设置材料跨行数
+    list_data.append((report_order, '', '材料小计', '', '', '', '', '', '', '', ''))
+    report_order = report_order + 1
+    list_data.append((report_order, '（方）辅助材料', '', '', '', '', '', '', '', '', ''))
+    report_order = report_order + 1
+    for num in mtype_num:
+        if num['mtype'] not in m1:
+            is_first = True
+            for m in m_data:
+                if m['mtype'] == num['mtype']:
+                    if is_first and report_order == 1:
+                        list_data.append((report_order, '材料', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
+                        is_first = False
+                    elif is_first:
+                        list_data.append((report_order, m['mtype'], '', m['mclass'], '', '', '', '', '', '', ''))
+                        is_first = False
+                    else:
+                        list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', ''))
+                    report_order = report_order + 1
+            list_data.append((report_order, '', '', '小计', '', '', '', '', '', '', ''))
+            report_order = report_order + 1
+    list_data.append(('合计', '', '', '', '', '', '', '', '', '', ''))
 
     # 数据行
     table_body.append_data_rows(list_data)
@@ -152,29 +167,35 @@ def totals_report(request):
     for row in table_body.iter_data_rows():
         if row[2].value == '材料小计':
             row[2].attr.colspan = 2
-        if row[2].value == '主要材料':
-            row[2].attr.rowspan = 6
-        if row[2].value == '结构件':
-            row[2].attr.rowspan = 3
-        if row[2].value == '其他材料':
-            row[2].attr.rowspan = 3
-        if row[1].value == '（方）辅助材料':
-            row[1].attr.colspan = 3
-        if row[1].value == '（方）辅助材料':
-            row[1].attr.colspan = 3
 
-        if row[1].value == '周转材料':
-            row[1].attr.colspan = 2
-            row[1].attr.rowspan = 5
-        if row[1].value == '机械设备':
-            row[1].attr.colspan = 2
-            row[1].attr.rowspan = 6
-        if row[1].value == '工器具及低值易耗品':
-            row[1].attr.colspan = 2
-            row[1].attr.rowspan = 5
-        if row[1].value == '办公物资':
-            row[1].attr.colspan = 2
-            row[1].attr.rowspan = 3
+        for g in format_table.keys():
+            if row[2].value in m1 and row[2].value == g:
+                row[2].attr.rowspan = format_table[g]
+        for g in format_table.keys():
+            if row[1].value is not '' and row[1].value not in m1 and row[1].value == g:
+                row[1].attr.rowspan = format_table[g] + 1
+                row[1].attr.colspan = 2
+        # if row[2].value == '结构件':
+        #     row[2].attr.rowspan = 3
+        # if row[2].value == '其他材料':
+        #     row[2].attr.rowspan = 3
+        if row[1].value == '（方）辅助材料':
+            row[1].attr.colspan = 3
+        # if row[1].value == '（方）辅助材料':
+        #     row[1].attr.colspan = 3
+        #
+        # if row[1].value == '周转材料':
+        #     row[1].attr.colspan = 2
+        #     row[1].attr.rowspan = 5
+        # if row[1].value == '机械设备':
+        #     row[1].attr.colspan = 2
+        #     row[1].attr.rowspan = 6
+        # if row[1].value == '工器具及低值易耗品':
+        #     row[1].attr.colspan = 2
+        #     row[1].attr.rowspan = 5
+        # if row[1].value == '办公物资':
+        #     row[1].attr.colspan = 2
+        #     row[1].attr.rowspan = 3
 
         if row[1].value == '材料':
             row[1].attr.rowspan = 13
@@ -183,6 +204,8 @@ def totals_report(request):
 
         row.set_style({
             'background-color': 'white',
+            'word-break': 'break-all',
+            'word-wrap': 'break-word'
         })
 
 
