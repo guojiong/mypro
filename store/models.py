@@ -34,7 +34,7 @@ class InStore(models.Model):
     specifi = models.CharField(max_length=128, verbose_name='品牌/规格/型号')
     num = models.IntegerField(verbose_name='数量')
     unit = models.CharField(max_length=128, verbose_name='单位')
-    rate = models.CharField(max_length=128, verbose_name='税率', null=True, blank=True)
+    rate = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='税率', null=True, blank=True)
     factory = models.CharField(max_length=128, verbose_name='厂家名称', null=True, blank=True)
     materialfee = models.CharField(max_length=128, verbose_name='材料费')
     price = models.CharField(max_length=10, verbose_name='税后单价')
@@ -51,6 +51,9 @@ class InStore(models.Model):
     class Meta:
         ordering = ['-date']
         db_table = 'instore'
+        unique_together = (
+            ('mtype', 'mclass', 'mname', 'specifi'),
+        )
         verbose_name = '入库单'
         verbose_name_plural = '入库单'
 

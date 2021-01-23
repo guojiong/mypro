@@ -1,11 +1,12 @@
-from django.db.models import Count
+from django.db.models import Count, F
 from django.http import JsonResponse
 from django.shortcuts import render
 from HTMLTable import HTMLTable
-
-
+from django.db.models import Avg, Sum
+from django.db import models
 # Create your views here.
 from mclass.models import Mclass
+from store.models import Store, InStore, OutStore
 
 
 def totals_page(request):
@@ -77,6 +78,8 @@ def totals_report(request):
     list_data = []
     mtype_num = Mclass.objects.values('mtype').annotate(c=Count('mclass')).values('mtype', 'c')
     m_data = Mclass.objects.values('mtype', 'mclass').all()
+    # main_data = Store.objects.annotate(np=F('num') * F('price')).values('mtype', 'mclass', 'num', 'price')
+    # .aggregate(all_cost=Sum(F("num") * F("price"), output_field=models.FloatField()))
     m1 = ['主要材料', '结构件', '其他材料']
     format_table = {}
     report_order = 1
@@ -91,7 +94,6 @@ def totals_report(request):
                         is_first = False
                     elif is_first:
                         list_data.append((report_order, '', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
-                        num['c']
                         is_first = False
                     else:
                         list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', ''))
@@ -167,7 +169,6 @@ def totals_report(request):
     for row in table_body.iter_data_rows():
         if row[2].value == '材料小计':
             row[2].attr.colspan = 2
-
         for g in format_table.keys():
             if row[2].value in m1 and row[2].value == g:
                 row[2].attr.rowspan = format_table[g]
@@ -175,28 +176,8 @@ def totals_report(request):
             if row[1].value is not '' and row[1].value not in m1 and row[1].value == g:
                 row[1].attr.rowspan = format_table[g] + 1
                 row[1].attr.colspan = 2
-        # if row[2].value == '结构件':
-        #     row[2].attr.rowspan = 3
-        # if row[2].value == '其他材料':
-        #     row[2].attr.rowspan = 3
         if row[1].value == '（方）辅助材料':
             row[1].attr.colspan = 3
-        # if row[1].value == '（方）辅助材料':
-        #     row[1].attr.colspan = 3
-        #
-        # if row[1].value == '周转材料':
-        #     row[1].attr.colspan = 2
-        #     row[1].attr.rowspan = 5
-        # if row[1].value == '机械设备':
-        #     row[1].attr.colspan = 2
-        #     row[1].attr.rowspan = 6
-        # if row[1].value == '工器具及低值易耗品':
-        #     row[1].attr.colspan = 2
-        #     row[1].attr.rowspan = 5
-        # if row[1].value == '办公物资':
-        #     row[1].attr.colspan = 2
-        #     row[1].attr.rowspan = 3
-
         if row[1].value == '材料':
             row[1].attr.rowspan = 13
         if row[0].value == '合计':
@@ -207,7 +188,6 @@ def totals_report(request):
             'word-break': 'break-all',
             'word-wrap': 'break-word'
         })
-
 
     # 报表表脚
     table_footer = HTMLTable()
