@@ -19,7 +19,7 @@ class Mclass(models.Model):
         verbose_name_plural = '项目'
 
     def getMtypeDropDownList(self):
-        return tuple([(0, '')] + list(Mclass.objects.values_list('mtype', 'mtype').distinct()))
+        return tuple([(0, '')] + list(Mclass.objects.values_list('mtype', 'mtype').distinct().order_by('mtype')))
 
     def getMclassDropDownList(self):
-        return tuple([(0, '')] + list(Mclass.objects.values_list('mclass', 'mclass').distinct()))
+        return tuple([(0, '')] + list(Mclass.objects.values_list('mclass', 'mclass').distinct().order_by('mclass')))
