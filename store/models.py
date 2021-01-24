@@ -62,9 +62,10 @@ class OutStore(models.Model):
     
     date = models.DateField(verbose_name='出库日期')
     outNo = models.CharField(max_length=128, unique=True, verbose_name='出库单号')
-    toWhere = models.CharField(max_length=128, verbose_name='出库去向')
+    toWhere = models.CharField(max_length=128, verbose_name='工程部位')
     store = models.ForeignKey(to=Store, on_delete=models.CASCADE, verbose_name='库存id')
     num = models.IntegerField(verbose_name='数量')
+    price = models.CharField(max_length=10, verbose_name='税后单价')
     demount = models.CharField(max_length=128, verbose_name='扣款金额')
     reciTeam = models.CharField(max_length=128, verbose_name='自用/班组')
     receiver = models.CharField(max_length=128, verbose_name='领用人')

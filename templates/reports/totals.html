@@ -29,7 +29,7 @@
                         </div>
                         <div class="form-group col-sm-6">
                             <div class="col-sm-8">
-                                <button class="btn btn-warning" type="button" id="q_submit">执行</button>
+                                <button class="btn btn-primary" type="button" id="q_submit">查询</button>
                                 <button class="btn btn-default" type="button" onclick="reset_date()">重置</button>
                                 <button class="btn btn-primary" type="button" id="q_print" onclick="preview()">打印报表</button>
                             </div>
@@ -55,7 +55,7 @@
         });
 
         // 打印
-        function preview(oper) {
+        function preview() {
             //判断iframe是否存在，不存在则创建iframe
             let iframe=document.getElementById("print-iframe");
             if (!iframe) {
@@ -95,7 +95,7 @@
             const year_month = $('#c_month').val();
             data['year_month'] = year_month;
             $.ajax({
-                url: "{% url 'reports:t_data' %}",
+                url: "{% url 'reports:totals' %}",
                 type: "POST",
                 async: false,
                 data: data,

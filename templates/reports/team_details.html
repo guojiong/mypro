@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>班组领用明细</title>
+  <!-- DataTables -->
+{% endblock title %}
+<link rel="stylesheet" href="{% static 'AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% block navheader %}
+<section class="content-header">
+	<h1 style="height: 0px">
+	班组领用明细
+	<small>Control panel</small>
+	</h1>
+	<ol class="breadcrumb">
+		<li><a href="#"><i class="fa fa-dashboard"></i> 班组领用明细</a></li>
+	</ol>
+</section>
+{% endblock navheader %}
+
+{% block content %}
+    <section class="content">
+
+        <div class="row">
+            <div class="box">
+                <div class="box-header">
+                    <form class="form-horizontal">
+                        <div class="form-group col-sm-4">
+                            <label for="c_project" class="col-sm-4 control-label">项目名称：</label>
+                            <div class="col-sm-8">
+{#                                <input type="text" class="form-control" id="c_project">#}
+                                <select id="c_project" class="form-control col-sm-12">
+                                    <option value="云峰">云峰</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <label for="c_team" class="col-sm-4 control-label">班组名称：</label>
+                            <div class="col-sm-8">
+{#                                <input type="text" class="form-control" id="c_team">#}
+                                <select id="c_team" class="form-control col-sm-12">
+                                    <option value="拱涵班组">拱涵班组</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <div class="col-sm-8">
+                                <button class="btn btn-primary" type="button" id="q_submit">查询</button>
+                                <button class="btn btn-default" type="button" onclick="reset_date()">重置</button>
+                                <button class="btn btn-primary" type="button" id="q_print" onclick="preview()">打印报表</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="printcontent" class="box-body"></div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+
+{% block js %}
+    <script>
+        $(function () {
+            let project = $('select#c_project')[0].value;
+            let team = $('select#c_team')[0].value;
+            if (project != null & team != null){
+                getteamreport();
+            }
+            getteamreport();
+        });
+
+        $('#q_submit').click(function () {
+            getteamreport();
+        });
+
+        function getteamreport(){
+            let data = {csrfmiddlewaretoken: '{{ csrf_token }}'};
+            const project = $('select#c_project')[0].value;
+            const team = $('select#c_team')[0].value;
+            if (project!=null & project!=""){
+                data['project'] = project;
+            }else{
+                alert('请选择项目名称！')
+                return
+            }
+            if (team!=null & team!=""){
+                data['team'] = team;
+            }else{
+                alert('请选择班组名称！')
+                return
+            }
+
+            $.ajax({
+                url: "{% url 'reports:team' %}",
+                type: "POST",
+                async: false,
+                data: data,
+                success: function (html) {
+                    {#html = html.replaceAll('&lt;', '<').replaceAll('&quot;', '"').replaceAll('&gt;', '>');#}
+                    html = html['Content']
+                    $('.box-body').html(html)
+                }
+            });
+        }
+
+        // 打印
+        function preview() {
+            //判断iframe是否存在，不存在则创建iframe
+            let iframe=document.getElementById("print-iframe");
+            if (!iframe) {
+                const el = document.getElementById("printcontent");
+                iframe = document.createElement('IFRAME');
+                let doc = null;
+                iframe.setAttribute("id", "print-iframe")
+                iframe.setAttribute('style', 'position:absolute; width:0px;height:0px;left:-500px;top:-500px;');
+                document.body.appendChild(iframe);
+                doc = iframe.contentWindow.document;
+                doc.write(el.innerHTML);
+                doc.close();
+                iframe.contentWindow.focus();
+            }
+            iframe.contentWindow.print()
+            if (navigator.userAgent.indexOf("MSIE") > 0){
+                document.body.removeChild(iframe);
+            }
+        }
+    </script>
+{% endblock js %}

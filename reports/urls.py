@@ -5,6 +5,6 @@ from reports import views
 app_name = 'reports'
 
 urlpatterns = [
-    path('data/', views.totals_report, name='t_data'),
-    path('', views.totals_page, name='totals')
+    path('totals/', views.totals_report, name='totals'),
+    path('team/', views.team_details_report, name='team')
 ]
