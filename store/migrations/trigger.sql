@@ -20,7 +20,12 @@ BEGIN
 			num =(SELECT sum( num ) FROM devops.instore WHERE project_id = new.project_id AND mtype = new.mtype AND mclass = new.mclass AND mname = new.mname AND specifi = new.specifi),
 			price = new.price,
 			unit = new.unit;
+
 	END IF;
+	UPDATE devops.instore
+    SET store_id = (SELECT id FROM devops.store WHERE project_id = new.project_id AND mtype = new.mtype AND mclass = new.mclass AND mname = new.mname AND specifi = new.specifi)
+    WHERE
+        project_id = new.project_id AND mtype = new.mtype AND mclass = new.mclass AND mname = new.mname AND specifi = new.specifi;
 END 
 
 

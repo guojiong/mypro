@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from HTMLTable import HTMLTable
 from mclass.models import Mclass
-from store.models import OutStore
+from store.models import OutStore, InStore
 
 
 def totals_report(request):
@@ -230,7 +230,7 @@ def team_details_report(request):
         title = '班组领用明细'
         table_head = HTMLTable(caption=title)
         table_head.append_data_rows((
-            ('', '项目名称：', project_name, '', '', '', '', '', '', '', '', '', '', '班组名称：', team_name, '',),
+            ('', '项目名称：', project_name, '', '', '', '', '', '', '', '', '', '班组名称：', team_name, '',),
         ))
         # 报表头
         # 标题样式
@@ -245,7 +245,7 @@ def team_details_report(request):
             'border-collapse': 'collapse',
             'word-break': 'keep-all',
             'white-space': 'nowrap',
-            'font-size': '14px',
+            'font-size': '15px',
         })
         # 统一设置所有单元格样式，<td>或<th>
         table_head.set_cell_style({
@@ -322,7 +322,7 @@ def team_details_report(request):
             'border-color': '#000',
             'border-width': '1px',
             'border-style': 'solid',
-            'padding': '5px',
+            'padding': '3px',
             'width': '50px',
         })
 
@@ -336,13 +336,13 @@ def team_details_report(request):
 
         # 覆盖表头单元格字体样式
         table_body.set_header_cell_style({
-            'padding': '15px',
+            'padding': '5px',
         })
 
         # 调小次表头字体大小
         table_body[1].set_cell_style({
-            'padding': '8px',
-            'font-size': '14px',
+            'padding': '4px',
+            'font-size': '15px',
         })
 
         # 遍历数据行，如果增长量为负，标红背景颜色
@@ -357,3 +357,147 @@ def team_details_report(request):
         # return HttpResponse(html)
         return JsonResponse({'Content': html}, safe=False)
     return render(request, 'reports/team_details.html')
+
+
+def provider_details_report(request):
+    flag = request.POST.get('csrfmiddlewaretoken')
+    if flag:
+        # project_name = request.POST.get('project')
+        provider = request.POST.get('c_provider')
+
+        # 报表标题
+        title = '材料采购明细表'
+        table_head = HTMLTable(caption=title)
+        table_head.append_data_rows((
+            ('', '供货单位：', provider, '', '', '', '', '', '', '', '', '', '',),
+        ))
+        # 报表头
+        # 标题样式
+        table_head.caption.set_style({
+            'text-align': 'center',
+            'font-size': '30px',
+        })
+
+        # 表格样式，即<table>标签样式
+        table_head.set_style({
+            'margin': "0 auto",
+            'border-collapse': 'collapse',
+            'word-break': 'keep-all',
+            'white-space': 'nowrap',
+            'font-size': '15px',
+        })
+        # 统一设置所有单元格样式，<td>或<th>
+        table_head.set_cell_style({
+            'text-align': 'center',
+            'border-color': '#000',
+            'border-width': '0px',
+            'border-style': 'solid',
+            'padding': '8px',
+            'min-width': '80px'
+        })
+        # 字体调整
+        table_head[0].set_cell_style({
+            'font-weight': '800',
+            'border-style': 'solid',
+            'padding': '8px',
+            'font-size': '15px',
+        })
+
+        # 报表主体
+        # 标题
+        table_body = HTMLTable()
+
+        # 表头行
+        table_body.append_header_rows((
+            ('日期', '单据编号', '材料类别', '材料小类', '材料名称', '品牌/规格/型号', '厂家名称', '是否结算', '单位', '税率', '数量',
+             '材料费', '', '', '', '运杂费', '', '',  # '入库金额', '',
+             '项目账目与结算相符', '', '附件数', '采购人', '验收员', '供货单位', '备注'),
+            ('', '', '', '', '', '', '', '', '', '', '', '不含税单价', '抵扣税额', '不含税金额', '含税金额', '单价', '金额', '其它',
+             # '单价', '金额',
+             '其它费用', '合计含税金额', '', '', '', '', ''),
+        ))
+
+        # 合并单元格
+        table_body[0][0].attr.rowspan = 2
+        table_body[0][1].attr.rowspan = 2
+        table_body[0][2].attr.rowspan = 2
+        table_body[0][3].attr.rowspan = 2
+        table_body[0][4].attr.rowspan = 2
+        table_body[0][5].attr.rowspan = 2
+        table_body[0][6].attr.rowspan = 2
+        table_body[0][7].attr.rowspan = 2
+        table_body[0][8].attr.rowspan = 2
+        table_body[0][9].attr.rowspan = 2
+        table_body[0][10].attr.rowspan = 2
+        table_body[0][11].attr.colspan = 4
+        table_body[0][15].attr.colspan = 3
+        table_body[0][18].attr.colspan = 2
+        table_body[0][20].attr.rowspan = 2
+        table_body[0][21].attr.rowspan = 2
+        table_body[0][22].attr.rowspan = 2
+        table_body[0][23].attr.rowspan = 2
+        table_body[0][24].attr.rowspan = 2
+
+        list_data = []
+        instores = InStore.objects.filter(provider=provider)
+        # m1 = []
+        for o in instores:
+            list_data.append((o.date, o.receiptNo, o.mtype, o.mclass, o.mname, o.specifi, '',
+                              '', o.unit, '', o.num, float(o.materialfee)/float(o.num),
+                              float(o.materialfee)-float(o.num) * float(o.price), float(o.num) * float(o.price),
+                              float(o.materialfee), '-', '-', '-', '-', '-', '-', o.buyer, o.inspector,
+                              o.provider, o.remark), )
+
+        # 数据行
+        table_body.append_data_rows(list_data)
+
+        # 表格样式，即<table>标签样式
+        table_body.set_style({
+            'margin': "0 auto",
+            'border-collapse': 'collapse',
+            'word-break': 'keep-all',
+            'white-space': 'nowrap',
+            'font-size': '10px',
+        })
+
+        # 统一设置所有单元格样式，<td>或<th>
+        table_body.set_cell_style({
+            'text-align': 'center',
+            'border-color': '#000',
+            'border-width': '1px',
+            'border-style': 'solid',
+            'padding': '3px',
+            'width': '50px',
+        })
+
+        # 表头样式
+        table_body.set_header_row_style({
+            'color': '#fff',
+            # 'background-color': '#48a6fb',
+            'background-color': '#4682B4',
+            'font-size': '10px',
+        })
+
+        # 覆盖表头单元格字体样式
+        table_body.set_header_cell_style({
+            'padding': '5px',
+        })
+
+        # 调小次表头字体大小
+        table_body[1].set_cell_style({
+            'padding': '4px',
+            'font-size': '10px',
+        })
+
+        # 遍历数据行，如果增长量为负，标红背景颜色
+        for row in table_body.iter_data_rows():
+            row.set_style({
+                'background-color': 'white',
+                'word-break': 'break-all',
+                'word-wrap': 'break-word'
+            })
+
+        html = table_head.to_html() + table_body.to_html()
+        # return HttpResponse(html)
+        return JsonResponse({'Content': html}, safe=False)
+    return render(request, 'reports/provider_details.html')

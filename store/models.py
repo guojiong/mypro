@@ -42,6 +42,7 @@ class InStore(models.Model):
     inspector = models.CharField(max_length=128, verbose_name='验收员')
     storeloc = models.CharField(max_length=128, verbose_name='仓库', null=True, blank=True)
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE, verbose_name='所属项目')
+    store = models.ForeignKey(to=Store, on_delete=models.CASCADE, verbose_name='所属项目')
     provider = models.CharField(max_length=128, verbose_name='供应商')
     remark = models.TextField(max_length=256, verbose_name='备注', null=True, blank=True)
     

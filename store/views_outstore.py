@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from project.models import Project
-from store.forms import OutStoreForm
+from store.forms import OutStoreForm, InStoreForm
 from store.models import OutStore, Store
 from django.http.response import JsonResponse
 
@@ -59,8 +59,8 @@ def out_store_query(request):
             return JsonResponse(re_data, safe=False)
 
     outs = OutStore.objects.values().filter(**searchCondition)
+    out_data = list(outs)
     if outs:
-        out_data = list(outs)
         for d in out_data:
             s_objs = Store.objects.values().filter(id=d['store_id'])
             p = Project.objects.values().filter(id=s_objs[0]['project_id'])
@@ -70,9 +70,10 @@ def out_store_query(request):
             d['store'] = s_list
             re_data.append(d)
     else:
-        return JsonResponse(outs, safe=False)
+        return JsonResponse(out_data, safe=False)
     return JsonResponse(re_data, safe=False)
 
 
 def outstore_lists(request):
-    return render(request, 'store/outstore_lists.html')
+    store_form = InStoreForm()
+    return render(request, 'store/outstore_lists.html', locals())

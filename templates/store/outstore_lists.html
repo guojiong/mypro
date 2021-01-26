@@ -79,7 +79,7 @@
                                 <span class="col-sm-1"></span>
                                 <button type="reset" class="btn btn-default col-sm-3">重置</button>
                                 <span class="col-sm-1"></span>
-							<button type="export" class="btn btn-default col-sm-3" id="export">导出</button>
+							    <button type="export" class="btn btn-default col-sm-3" id="export">导出</button>
                             </div>
                             <div class="form-group col-lg-4" ></div>
                         </div>
@@ -105,12 +105,128 @@
 							<th>领用人</th>
 							<th>所属项目</th>
 							<th>备注</th>
+							<th>操作</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 		</div>
 	</div>
+
+    <div class="modal fade" id="modal-store" >
+		<div class="modal-dialog" style="width: 78%">
+			<div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				    <span aria-hidden="true">&times;</span></button>
+				  <h4 class="modal-title">编辑</h4>
+				</div>
+				<div class="modal-body">
+					<!-- form start -->
+					{% load mytags %}
+					<form class="form-horizontal">
+						<div class="box-body">
+							<input type="text" id="storeid" value="{{ store.id }}" hidden>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{ store_form.date|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.date}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.receiptNo |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.receiptNo}}
+								</div>
+                                <div class="form-group col-lg-4">
+							  		{{store_form.project |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.project}}
+								</div>
+
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
+							  		{{ store_form.mtype|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.mtype}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.mclass |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.mclass}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{ store_form.mname|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.mname}}
+								</div>
+
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
+							  		{{store_form.specifi |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.specifi}}
+								</div>
+                                <div class="form-group col-lg-4">
+							  		{{store_form.unit |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.unit}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.num}}
+								</div>
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
+							  		{{store_form.materialfee |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.materialfee}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.rate|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.rate}}
+								</div>
+                                <div class="form-group col-lg-4">
+							  		{{ store_form.price|label_with_classes:'col-xs-5 control-label' }}
+							 		{{store_form.price}}
+								</div>
+							</div>
+							<div class="form-group">
+                                <div class="form-group col-lg-4">
+							  		{{store_form.inspector |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.inspector}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.buyer |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.buyer}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.storeloc |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.storeloc}}
+								</div>
+
+							</div>
+							<div class="form-group">
+								<div class="form-group col-lg-4">
+							  		{{store_form.provider |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.provider}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.factory |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.factory}}
+								</div>
+								<div class="form-group col-lg-4">
+							  		{{store_form.remark |label_with_classes:'col-lg-5 control-label'}}
+							  		{{store_form.remark}}
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="savebtn">Save changes</button>
+				</div>
+			</div>
+		<!-- /.modal-content -->
+		</div>
+          <!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 </section>
 
 {% endblock content %}
@@ -176,8 +292,62 @@
             { data: 'receiver' },
             { data: 'store.project.name' },
             { data: 'remark' },
+            { data: null, render: function (data) {
+                let outNo = data['outNo']
+                return '<button class="btn btn-sm btn-primary" onclick="javascript:back_modal('+ outNo +');">退库</button>&nbsp;&nbsp;';
+            } },
         ]
     });
+    
+    function back_modal(outNo) {
+        /* id = id; */
+		$.ajax({
+			url:"{% url 'store:out_data' %}",
+			type:'POST',
+			data:{
+				csrfmiddlewaretoken:'{{ csrf_token }}',
+				'out_No':outNo,
+			},
+			success:function(res){
+				if (res.length==0){
+					return
+				}
+				let date = $('div#modal-store input#date')[0];
+                let label_receiptNo = $('div#modal-store label[for="receiptNo"]')[0];
+                let receiptNo = $('div#modal-store input#receiptNo')[0];
+                let mtype = $('div#modal-store select#mtype')[0];
+                let mclass = $('div#modal-store select#mclass')[0];
+                let mname = $('div#modal-store input#mname')[0];
+                let specifi = $('div#modal-store input#specifi')[0];
+                let num = $('div#modal-store input#num')[0];
+                let unit = $('div#modal-store input#unit')[0];
+                let rate = $('div#modal-store input#rate')[0];
+                let factory = $('div#modal-store input#factory')[0];
+                let materialfee = $('div#modal-store input#materialfee')[0];
+                let price = $('div#modal-store input#price')[0];
+                let buyer = $('div#modal-store input#buyer')[0];
+                let inspector = $('div#modal-store input#inspector')[0];
+                let storeloc = $('div#modal-store input#storeloc')[0];
+                let project = $('div#modal-store select#project')[0];
+                let provider = $('div#modal-store input#provider')[0];
+                let remark = $('div#modal-store textarea#remark')[0];
+
+				date.valueAsDate = new Date();
+				receiptNo.value = res[0].outNo + '-T' + (date.valueAsDate.getMonth() + 1) + date.valueAsDate.getDate();
+				project.value = res[0].store.project.id;
+                label_receiptNo.innerHTML = '退库单号:'
+				mtype.value = res[0].store.mtype;
+				mclass.value = res[0].store.mclass;
+				mname.value = res[0].store.mname;
+				specifi.value = res[0].store.specifi;
+				{#pname.value = res[0]['pname'];#}
+				unit.value = res[0].store.unit;
+				price.value = res[0].price;
+
+			},
+		});
+        $('#modal-store').modal();
+    }
 
     function trim(str){   
     	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
