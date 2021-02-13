@@ -13,9 +13,10 @@ def totals_report(request):
         year_month = request.POST.get('year_month')
 
         # 报表标题
-        title = '重庆明珠建设（集团）有限公司 %s 月材料报表' % year_month
+        title = '重庆明珠建设（集团）有限公司材料报表'
         table_head = HTMLTable(caption=title)
         table_head.append_data_rows((
+            ('', '', '', '', '起止时间：', '2021-01-01', '~', '2021-01-31', '', '', ''),
             ('单位：', project, '', '', '', '', '', '', '', '单位：', '元'),
         ))
         # 报表头
@@ -56,20 +57,28 @@ def totals_report(request):
 
         # 表头行
         table_body.append_header_rows((
-            ('序号', '材料分类', '', '', '上期结存金额', '入库金额', '', '出库金额', '', '本期结存金额', '备注'),
-            ('', '', '', '', '', '本期', '累计', '本期', '累计', '', ''),
+            ('序号', '材料分类', '', '', '不含税', '', '', '', '', '', '含税',  '', '', '', '', '', '备注'),
+            ('', '', '', '', '上期结存金额', '入库金额', '', '出库金额', '', '本期结存金额',
+             '上期结存金额', '入库金额', '', '出库金额', '', '本期结存金额', ''),
+            ('', '', '', '', '', '本期', '累计', '本期', '累计', '', '', '本期', '累计', '本期', '累计', '', ''),
         ))
 
         # 合并单元格
-        table_body[0][0].attr.rowspan = 2
-        table_body[0][1].attr.rowspan = 2
+        table_body[0][0].attr.rowspan = 3
+        table_body[0][1].attr.rowspan = 3
         table_body[0][1].attr.colspan = 3
-        table_body[0][4].attr.rowspan = 2
-        table_body[0][5].attr.colspan = 2
+        table_body[0][4].attr.colspan = 6
+        table_body[1][4].attr.rowspan = 2
+        table_body[1][5].attr.colspan = 2
+        table_body[1][7].attr.colspan = 2
         table_body[0][7].attr.colspan = 2
-        table_body[0][7].attr.colspan = 2
-        table_body[0][9].attr.rowspan = 2
-        table_body[0][10].attr.rowspan = 2
+        table_body[0][10].attr.colspan = 6
+        table_body[1][10].attr.rowspan = 2
+        table_body[1][9].attr.rowspan = 2
+        table_body[1][11].attr.colspan = 2
+        table_body[1][13].attr.colspan = 2
+        table_body[1][15].attr.rowspan = 2
+        table_body[0][16].attr.rowspan = 3
 
         list_data = []
         mtype_num = Mclass.objects.values('mtype').annotate(c=Count('mclass')).values('mtype', 'c')
@@ -86,21 +95,21 @@ def totals_report(request):
                 for m in m_data:
                     if m['mtype'] == num['mtype']:
                         if is_first and report_order == 1:
-                            list_data.append((report_order, '材料', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
+                            list_data.append((report_order, '材料', m['mtype'], m['mclass'], '', '', '', '', '', '', '', '', '', '', '', '', ''))
                             is_first = False
                         elif is_first:
-                            list_data.append((report_order, '', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
+                            list_data.append((report_order, '', m['mtype'], m['mclass'], '', '', '', '', '', '', '', '', '', '', '', '', ''))
                             is_first = False
                         else:
-                            list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', ''))
+                            list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', '', '', '', '', '', '', ''))
                         report_order = report_order + 1
 
         for row in table_body.iter_data_rows():
             if row[1].value == '材料':
                 row[1].attr.rowspan = report_order  # 设置材料跨行数
-        list_data.append((report_order, '', '材料小计', '', '', '', '', '', '', '', ''))
+        list_data.append((report_order, '', '材料小计', '', '', '', '', '', '', '', '', '', '', '', '', '', ''))
         report_order = report_order + 1
-        list_data.append((report_order, '（方）辅助材料', '', '', '', '', '', '', '', '', ''))
+        list_data.append((report_order, '（方）辅助材料', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''))
         report_order = report_order + 1
         for num in mtype_num:
             if num['mtype'] not in m1:
@@ -108,17 +117,17 @@ def totals_report(request):
                 for m in m_data:
                     if m['mtype'] == num['mtype']:
                         if is_first and report_order == 1:
-                            list_data.append((report_order, '材料', m['mtype'], m['mclass'], '', '', '', '', '', '', ''))
+                            list_data.append((report_order, '材料', m['mtype'], m['mclass'], '', '', '', '', '', '', '', '', '', '', '', '', ''))
                             is_first = False
                         elif is_first:
-                            list_data.append((report_order, m['mtype'], '', m['mclass'], '', '', '', '', '', '', ''))
+                            list_data.append((report_order, m['mtype'], '', m['mclass'], '', '', '', '', '', '', '', '', '', '', '', '', ''))
                             is_first = False
                         else:
-                            list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', ''))
+                            list_data.append((report_order, '', '', m['mclass'], '', '', '', '', '', '', '', '', '', '', '', '', ''))
                         report_order = report_order + 1
-                list_data.append((report_order, '', '', '小计', '', '', '', '', '', '', ''))
+                list_data.append((report_order, '', '', '小计', '', '', '', '', '', '', '', '', '', '', '', '', ''))
                 report_order = report_order + 1
-        list_data.append(('合计', '', '', '', '', '', '', '', '', '', ''))
+        list_data.append(('合计', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''))
 
         # 数据行
         table_body.append_data_rows(list_data)
