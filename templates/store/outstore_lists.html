@@ -227,6 +227,25 @@
           <!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
+    <div class="modal fade" id="modal-config">
+       <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">操作确认</h4>
+                </div>
+                <div class="modal-body">
+                    <i class="Hui-iconfont">&#xe688;</i> 确认删除选中的项？
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="confirmDelete" class="btn bg-red btn-sm ok" data-dismiss="modal">确认</a>
+                    <a href="#" class="btn bg-green btn-sm" data-dismiss="modal">取消</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 {% endblock content %}
@@ -293,11 +312,44 @@
             { data: 'store.project.name' },
             { data: 'remark' },
             { data: null, render: function (data) {
-                let outNo = data['outNo']
-                return '<button class="btn btn-sm btn-primary" onclick="javascript:back_modal('+ outNo +');">退库</button>&nbsp;&nbsp;';
+                    let outNo = data['outNo']
+                    let id = data['id']
+                    return '<button class="btn btn-sm btn-primary" onclick="javascript:back_modal('+ outNo +');">退库</button>&nbsp;&nbsp;' +
+                    '<button class="btn btn-sm btn-primary btn-warning" onclick="javascript:del('+ id +');">删除</button>&nbsp;&nbsp;';
             } },
         ]
     });
+
+    function del(id){
+		$('#modal-config').modal();
+		$("#confirmDelete").click(function(){
+			$.ajax({
+				url:"{% url 'store:out_del' %}",
+				type:'post',
+				async : false,
+				data:{
+				    csrfmiddlewaretoken:'{{csrf_token}}',
+					'id':id
+				},
+				success:succFunction,
+			});
+
+        });
+
+	}
+
+	function succFunction(res){
+		if(res.status==200){
+			// 消息框
+			toastr.options.timeOut = 1000;
+			{#toastr.options.onHidden = function() { window.location.href = "{% url 'store:out_lists' %}"; }#}
+            s_table.ajax.reload();
+			toastr.success(res.msg);
+			return true;
+		}else{
+			toastr.error(res.msg)
+		}
+	}
     
     function back_modal(outNo) {
         /* id = id; */

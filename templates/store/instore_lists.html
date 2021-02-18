@@ -309,6 +309,10 @@
             {data: 'inspector'},
             {data: 'project.name'},
             {data: 'provider'},
+            {data: null, render: function (data) {
+                let id = data['id']
+                    return '<button class="btn btn-sm btn-primary btn-warning" onclick="javascript:del(' + id + ');">删除</button>'
+                }},
         ]
     });
 
@@ -335,10 +339,11 @@
 		$('#modal-config').modal(); 
 		$("#confirmDelete").click(function(){
 			$.ajax({
-				url:"{% url 'project:del'%}",
-				type:'get',
+				url:"{% url 'store:in_del' %}",
+				type:'post',
 				async : false, 
 				data:{
+				    csrfmiddlewaretoken:'{{csrf_token}}',
 					'id':id
 				},
 				success:succFunction,

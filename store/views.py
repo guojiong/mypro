@@ -71,3 +71,8 @@ def in_store_data(request):
         'instores': re_list
     }
     return JsonResponse(result)
+
+
+def instore_del(request):
+    ids = request.POST.get('id')
+    InStore.objects.filter(id=ids).delete()

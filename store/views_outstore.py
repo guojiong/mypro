@@ -22,12 +22,13 @@ def outstore_save(request):
         if store.__len__() == 0:
             return JsonResponse({'status': 500, 'msg': '库存未找到，请刷新或查证后再出库！'})
         data['store'] = store[0]
+        data['price'] = store[0].price
         outNo = outstore_form.cleaned_data.get('outNo')
         outStore = OutStore.objects.filter(outNo=outNo)
         if outStore:
-            return JsonResponse({'status': 500, 'msg': '该采购单已入库！不能重复入库'})
+            return JsonResponse({'status': 500, 'msg': '该采购单已入库，不能重复入库！'})
         OutStore.objects.create(**data)
-        return JsonResponse({'status': 200, 'msg': '新增成功'})
+        return JsonResponse({'status': 200, 'msg': '新增成功！'})
     return JsonResponse({'status': 500, 'msg': outstore_form.errors})
 
 
@@ -77,3 +78,13 @@ def out_store_query(request):
 def outstore_lists(request):
     store_form = InStoreForm()
     return render(request, 'store/outstore_lists.html', locals())
+
+
+# 删除材料出库记录
+def outstore_del(request):
+    try:
+        ids = request.POST.get('id')
+        OutStore.objects.filter(id=ids).delete()
+        return JsonResponse({'status': 200, 'msg': '删除成功！'})
+    except Exception as e:
+        return JsonResponse({'status': 500, 'msg': '删除失败'})
