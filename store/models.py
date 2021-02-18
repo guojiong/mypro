@@ -13,7 +13,8 @@ class Store(models.Model):
     num = models.IntegerField(verbose_name='数量')
     price = models.CharField(max_length=10, verbose_name='税后单价')
     unit = models.CharField(max_length=128, verbose_name='单位')
-    
+    status = models.CharField(max_length=1, verbose_name='是否删除')
+
     def __str__(self):
         return '[%s]' % (self.mname)
     
@@ -45,6 +46,7 @@ class InStore(models.Model):
     store = models.ForeignKey(to=Store, on_delete=models.CASCADE, verbose_name='所属项目')
     provider = models.CharField(max_length=128, verbose_name='供应商')
     remark = models.TextField(max_length=256, verbose_name='备注', null=True, blank=True)
+    status = models.CharField(max_length=1, verbose_name='是否删除')
     
     def __str__(self):
         return '[%s]_%s_%s_%s_%s_%s' % (self.mname, self.mtype, self.mclass, self.specifi, self.project, self.factory)
@@ -71,9 +73,10 @@ class OutStore(models.Model):
     reciTeam = models.CharField(max_length=128, verbose_name='自用/班组')
     receiver = models.CharField(max_length=128, verbose_name='领用人')
     remark = models.TextField(max_length=256, verbose_name='备注', null=True, blank=True)
+    status = models.CharField(max_length=1, verbose_name='是否删除')
     
     def __str__(self):
-        return '[%s]' % (self.outNo)
+        return '[%s]' % self.outNo
     
     class Meta:
         ordering = ['-date']

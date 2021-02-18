@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse
+
+from store.models import Store, InStore
 from .models import Project
 from . import forms
 from .forms import ProjectForm
@@ -25,20 +27,20 @@ def project_save(request):
         name = form_add.cleaned_data.get('name')
         remark = form_add.cleaned_data.get('remark')
         data = {
-            'code':code,
-            'name':name,
-            'remark':remark,
+            'code': code,
+            'name': name,
+            'remark': remark,
             }
         if ids:
             Project.objects.filter(id=ids).update(**data)
-            return JsonResponse({'status':'200', 'msg':'更新成功'})
+            return JsonResponse({'status': '200', 'msg': '更新成功'})
         else:
             project = Project.objects.filter(code=code)
             if project:
-                return JsonResponse({'status':'500', 'msg':'项目编号已存在，请重新录入！'})
+                return JsonResponse({'status': '500', 'msg': '项目编号已存在，请重新录入！'})
             Project.objects.create(**data)
-            return JsonResponse({'status':'200', 'msg':'新增成功'})
-    return JsonResponse({'status':'500', 'msg':form_add._errors})
+            return JsonResponse({'status': '200', 'msg': '新增成功'})
+    return JsonResponse({'status': '500', 'msg': form_add._errors})
 
 
 def project_query(request):
@@ -54,11 +56,12 @@ def project_del(request):
     project_id = request.GET.get('id')
     project = Project.objects.filter(id=project_id)
     if project:
-        project.delete()
-    logproject = Project.objects.filter(id=project_id)
-    if logproject:
-        return JsonResponse({'status':500, 'msg':'删除失败'})
-    return JsonResponse({'status':200, 'msg':'删除成功'})
+        project.update(status=1)  # delete()
+    log_project = Project.objects.filter(id=project_id, status=0)
+    InStore.objects.filter(status=0, project=project).update(status=1)
+    if log_project:
+        return JsonResponse({'status': 500, 'msg': '删除失败'})
+    return JsonResponse({'status': 200, 'msg': '删除成功'})
 
 
 def datatable(request):
@@ -67,15 +70,16 @@ def datatable(request):
     name = request.POST.get('name')
     projects = ''
     if code:
-        projects = objprojects.values().filter(code__contains=code)
+        projects = objprojects.values().filter(code__contains=code, status=0)
         if name and projects:
-            projects = projects.filter(name__contains=name)
+            projects = projects.filter(name__contains=name, status=0)
     elif name:
-        projects = objprojects.values().filter(name__contains=name)
+        projects = objprojects.values().filter(name__contains=name, status=0)
     else:
-        projects = objprojects.values().all()
+        projects = objprojects.values().filter(status=0)
     projects_list = list(projects)
     return JsonResponse(projects_list, safe=False)
+
 
 def test(request):
     return render(request, 'test_datatable.html')
