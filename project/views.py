@@ -58,7 +58,6 @@ def project_del(request):
     if project:
         project.update(status=1)  # delete()
     log_project = Project.objects.filter(id=project_id, status=0)
-    InStore.objects.filter(status=0, project=project).update(status=1)
     if log_project:
         return JsonResponse({'status': 500, 'msg': '删除失败'})
     return JsonResponse({'status': 200, 'msg': '删除成功'})
