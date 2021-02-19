@@ -364,14 +364,33 @@
             {data: 'mname' },
             {data: 'specifi' },
             {data: 'iNum' },
-            {data: 'iMaterialfee' },
+            {data: null, render: function (data) {
+                    let iMaterialfee = data['iMaterialfee']
+                    if(iMaterialfee!=null && iMaterialfee!=''){
+                        return format_number(parseFloat(iMaterialfee), 2)
+                    }else{
+                        return ''
+                    }
+                } },
             {data: 'oNum' },
-            {data: 'oMaterialfee' },
+            {data: null, render: function (data) {
+                    let oMaterialfee = data['oMaterialfee']
+                    if(oMaterialfee!=null && oMaterialfee!=''){
+                        return format_number(parseFloat(oMaterialfee), 2)
+                    }else{
+                        return ''
+                    }
+                } },
             {data: 'num' },
             {data: null, render: function (data) {
-                    return data['num']*data['price']
+                    let fee = data['num']*data['price']
+                    if (fee != null && fee != ''){
+                        return format_number(data['num']*data['price'], 2)
+                    }else{
+                        return ''
+                    }
                 } },
-            {data: 'price' },
+            {data: 'price'},
             {data: 'unit' },
             {data: null, render: function (data) {
                 let id = data['id']
@@ -381,6 +400,31 @@
         ]
 
     })
+
+    // 四舍五入
+    function format_number(srcNumber, n) {//n是要保留的位数
+        let dstNumber = parseFloat(srcNumber);
+        if (isNaN(dstNumber)) {
+            return srcNumber;
+        }
+        if (dstNumber >= 0) {
+            dstNumber = parseInt(dstNumber * Math.pow(10, n) + 0.5) / Math.pow(10, n);//关键点
+        } else {
+            let tmpDstNumber = -dstNumber;
+            dstNumber = parseInt(tmpDstNumber * Math.pow(10, n) + 0.5) / Math.pow(10, n);
+        }
+        let dstStrNumber = dstNumber.toString();
+        let dotIndex = dstStrNumber.indexOf('.');
+        if (dotIndex < 0) {
+            dotIndex = dstStrNumber.length; dstStrNumber += '.';
+        }
+
+        while (dstStrNumber.length <= dotIndex + n) {
+            dstStrNumber += '0';
+        }
+        return dstStrNumber;
+    }
+
     function trim(str){   
     	return str.replace(/^(\s|\u00A0)+/,'').replace(/(\s|\u00A0)+$/,'');   
 	}

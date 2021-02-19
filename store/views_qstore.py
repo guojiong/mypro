@@ -51,9 +51,14 @@ def q_store_data(request):
         for s in tmp:
             p = Project.objects.values().filter(id=s['project_id'])
             s['project'] = list(p)[0]
-            i = InStore.objects.values('num', 'materialfee').filter(store=s['id']).aggregate(Sum('num'), Sum('materialfee'))
-            s['iNum'] = i['num__sum']
-            s['iMaterialfee'] = i['materialfee__sum']
+            i = InStore.objects.values('num').filter(store=s['id']).annotate(
+                all_cost=Sum(F('num') * F('price'), output_field=models.FloatField()))
+            if i:
+                s['iNum'] = i[0]['num']
+                s['iMaterialfee'] = i[0]['all_cost']
+            else:
+                s['iNum'] = ''
+                s['iMaterialfee'] = ''
 
             # o = OutStore.objects.values('num', 'price').filter(store=s['id']).aggregate(Sum('num'), Sum('price'))
             o = OutStore.objects.values('num').filter(store=s['id']).annotate(

@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 
 from project.models import Project
@@ -17,18 +19,26 @@ def outstore_save(request):
         data.pop('specifi')
         data.pop('pname')
         data.pop('unit')
+        # 生成出库单号outNo = C + 年月日 + 四位序号
+        now_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        outs = OutStore.objects.values('outNo').filter(date=now_date).order_by('-create_time')
+        if outs:
+            data['outNo'] = 'C%d' % (int(outs[0]['outNo'][1:]) + 1)
+        else:
+            data['outNo'] = 'C' + now_date.replace('-', '') + '0001'
+
+        # 判定库存是否存在，并关联项目
         storeid = outstore_form.cleaned_data.get('store')
         store = Store.objects.filter(id=storeid)
         if store.__len__() == 0:
             return JsonResponse({'status': 500, 'msg': '库存未找到，请刷新或查证后再出库！'})
+        if store[0].num < float(data['num']):  # 判定库存数量是否满足出库要求
+            return JsonResponse({'status': 500, 'msg': '库存剩余：%s，不满足出库要求，请调整出库数量再出库！' % store[0].num})
         data['store'] = store[0]
         data['price'] = store[0].price
-        outNo = outstore_form.cleaned_data.get('outNo')
-        outStore = OutStore.objects.filter(outNo=outNo)
-        if outStore:
-            return JsonResponse({'status': 500, 'msg': '该采购单已入库，不能重复入库！'})
+
         OutStore.objects.create(**data)
-        return JsonResponse({'status': 200, 'msg': '新增成功！'})
+        return JsonResponse({'status': 200, 'msg': '出库成功！'})
     return JsonResponse({'status': 500, 'msg': outstore_form.errors})
 
 

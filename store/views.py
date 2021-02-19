@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.core import serializers
@@ -23,24 +24,32 @@ def instore_save(request):
     if instore_form.is_valid():
         data = instore_form.cleaned_data
         ids = instore_form.cleaned_data.get('id')
-        receiptNo = instore_form.cleaned_data.get('receiptNo')
+
+        # 生成入库单号receiptNo = R + 年月日 + 四位序号
+        now_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        ins = InStore.objects.values('receiptNo').filter(date=now_date).order_by('-create_time')
+        if ins:
+            data['receiptNo'] = 'R%d' % (int(ins[0]['receiptNo'][1:]) + 1)
+        else:
+            data['receiptNo'] = 'R' + now_date.replace('-', '') + '0001'
+
+        # 判定项目是否存在，并关联项目
         project = instore_form.cleaned_data.get('project')
         projectobj = Project.objects.filter(id=project)
         if projectobj.__len__() == 0:
-            return JsonResponse({'status': 500, 'msg': '所属项目不存在' })
+            return JsonResponse({'status': 500, 'msg': '所属项目不存在'})
         data['project'] = projectobj[0]
-        if ids:
-            InStore.objects.filter(id=ids).update(**data)
-            return JsonResponse({'status': 200, 'msg': '更新成功'})
-        else:
-            instore = InStore.objects.filter(receiptNo=receiptNo)
-            if instore:
-                return JsonResponse({'status': 500, 'msg': '该采购单已入库！不能重复入库'})
-            InStore.objects.create(**data)
-            store = Store.objects.filter(project=data['project'], mtype=data['mtype'], mclass=data['mclass'], mname=data['mname'], specifi=data['specifi']).first()
-            InStore.objects.filter(receiptNo=receiptNo).update(store=store)
-            return JsonResponse({'status': 200, 'msg': '新增成功'})
-    print(instore_form.errors)
+
+        # if ids: 不提供修改
+        #     InStore.objects.filter(id=ids).update(**data)
+        #     return JsonResponse({'status': 200, 'msg': '更新成功'})
+        # else:
+
+        InStore.objects.create(**data)
+        store = Store.objects.filter(project=data['project'], mtype=data['mtype'], mclass=data['mclass'], mname=data['mname'], specifi=data['specifi']).first()
+        InStore.objects.filter(receiptNo=data['receiptNo']).update(store=store)
+        return JsonResponse({'status': 200, 'msg': '新增成功'})
+    # print(instore_form.errors)
     return JsonResponse({'status': 500, 'msg': instore_form.errors})
 
 
