@@ -60,11 +60,11 @@
 							<th rowspan="2" style="border-color: #999999;vertical-align: middle">材料小类</th>
 							<th rowspan="2" style="border-color: #999999;vertical-align: middle">材料名称</th>
 							<th rowspan="2" style="border-color: #999999;vertical-align: middle">品牌/规格/型号</th>
+                            <th rowspan="2" style="border-color: #999999;vertical-align: middle">单位</th>
 							<th colspan="2" style="border-color: #999999;text-align: center">入库</th>
 							<th colspan="2" style="border-color: #999999;text-align: center">出库</th>
 							<th colspan="2" style="border-color: #999999;text-align: center">库存</th>
                             <th rowspan="2" style="border-color: #999999;vertical-align: middle">税后单价</th>
-							<th rowspan="2" style="border-color: #999999;vertical-align: middle">单位</th>
 							<th rowspan="2" class="col-lg-1" style="border-color: #999999;min-width: 180px; vertical-align: middle">操作</th>
 						</tr>
                         <tr>
@@ -132,19 +132,15 @@
 									{{ store_form.unit }}
 								</div>
 								<div class="form-group col-lg-4">
-							  		{{ store_form.outNo|label_with_classes:'col-xs-5 control-label' }}
-							  		{{ store_form.outNo }}
-						  		</div>
-								<div class="form-group col-lg-4">
 									{{ store_form.toWhere|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.toWhere }}
 								</div>
-							</div>
-							<div class="form-group">
 								<div class="form-group col-lg-4 form-horizontal">
 									{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.num }}
 								</div>
+							</div>
+							<div class="form-group">
                                 <div class="form-group col-lg-4">
 									{{ store_form.demount|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.demount }}
@@ -153,11 +149,12 @@
 									{{ store_form.reciTeam|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.reciTeam }}
 								</div>
-							</div><div class="form-group">
                                  <div class="form-group col-lg-4">
 									{{ store_form.receiver|label_with_classes:'col-xs-5 control-label' }}
 									{{ store_form.receiver }}
 								</div>
+							</div>
+                            <div class="form-group">
 								<div class="form-group col-lg-4">
 							  		{{store_form.remark|label_with_classes:'col-xs-5 control-label'}}
 							  		{{store_form.remark}}
@@ -363,13 +360,14 @@
             {data: 'mclass' },
             {data: 'mname' },
             {data: 'specifi' },
+            {data: 'unit' },
             {data: 'iNum' },
             {data: null, render: function (data) {
                     let iMaterialfee = data['iMaterialfee']
                     if(iMaterialfee!=null && iMaterialfee!=''){
                         return format_number(parseFloat(iMaterialfee), 2)
                     }else{
-                        return ''
+                        return 0
                     }
                 } },
             {data: 'oNum' },
@@ -378,7 +376,7 @@
                     if(oMaterialfee!=null && oMaterialfee!=''){
                         return format_number(parseFloat(oMaterialfee), 2)
                     }else{
-                        return ''
+                        return 0
                     }
                 } },
             {data: 'num' },
@@ -391,7 +389,6 @@
                     }
                 } },
             {data: 'price'},
-            {data: 'unit' },
             {data: null, render: function (data) {
                 let id = data['id']
                 return '<button class="btn btn-sm btn-primary" onclick="javascript:in_modal('+ id +');">查看入库单</button>&nbsp;&nbsp;' +
@@ -464,7 +461,6 @@
     function save(){
     	const date = $('div#modal-outstore input#date')[0].value;
 		const storeid = $('div#modal-outstore input#storeid')[0].value;
-		const outNo = $('div#modal-outstore input#outNo')[0].value;
 		const toWhere = $('div#modal-outstore input#toWhere')[0].value;
 		const num = $('div#modal-outstore input#num')[0].value;
 		const demount = $('div#modal-outstore input#demount')[0].value;
@@ -478,7 +474,6 @@
 				csrfmiddlewaretoken:'{{csrf_token}}',
 				'date':date,
 				'store':storeid,
-				'outNo':outNo,
 				'toWhere':toWhere,
 				'num':num,
 				'demount':demount,

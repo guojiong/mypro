@@ -52,23 +52,23 @@ def q_store_data(request):
             p = Project.objects.values().filter(id=s['project_id'])
             s['project'] = list(p)[0]
             i = InStore.objects.values('num').filter(store=s['id']).annotate(
-                all_cost=Sum(F('num') * F('price'), output_field=models.FloatField()))
+                all_cost=Sum(F('num') * F('price'), output_field=models.FloatField())).annotate(nums=Sum('num'))
             if i:
-                s['iNum'] = i[0]['num']
+                s['iNum'] = i[0]['nums']
                 s['iMaterialfee'] = i[0]['all_cost']
             else:
-                s['iNum'] = ''
-                s['iMaterialfee'] = ''
+                s['iNum'] = 0
+                s['iMaterialfee'] = 0
 
             # o = OutStore.objects.values('num', 'price').filter(store=s['id']).aggregate(Sum('num'), Sum('price'))
             o = OutStore.objects.values('num').filter(store=s['id']).annotate(
-                all_cost=Sum(F('num') * F('price'), output_field=models.FloatField()))
+                all_cost=Sum(F('num') * F('price'), output_field=models.FloatField())).annotate(nums=Sum('num'))
             if o:
-                s['oNum'] = o[0]['num']
+                s['oNum'] = o[0]['nums']
                 s['oMaterialfee'] = o[0]['all_cost']
             else:
-                s['oNum'] = ''
-                s['oMaterialfee'] = ''
+                s['oNum'] = 0
+                s['oMaterialfee'] = 0
 
             re_list.append(s)
 
@@ -80,7 +80,8 @@ def q_in_store_by_store_id(request):
     re_list = []
     if store_ids:
         s = Store.objects.filter(id=store_ids)
-        in_store = InStore.objects.values().filter(project=s[0].project, mtype=s[0].mtype, mclass=s[0].mclass, mname=s[0].mname, specifi=s[0].specifi)
+        in_store = InStore.objects.values().filter(project=s[0].project, mtype=s[0].mtype, mclass=s[0].mclass,
+                                                   mname=s[0].mname, specifi=s[0].specifi, unit=s[0].unit)
         if in_store:
             for tmp in in_store:
                 project = Project.objects.values().filter(id=tmp['project_id'])

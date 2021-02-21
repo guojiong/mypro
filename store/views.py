@@ -46,11 +46,12 @@ def instore_save(request):
         # else:
 
         InStore.objects.create(**data)
-        store = Store.objects.filter(project=data['project'], mtype=data['mtype'], mclass=data['mclass'], mname=data['mname'], specifi=data['specifi']).first()
+        store = Store.objects.filter(project=data['project'], mtype=data['mtype'], mclass=data['mclass'],
+                                     mname=data['mname'], specifi=data['specifi'], unit=data['unit']).first()
         InStore.objects.filter(receiptNo=data['receiptNo']).update(store=store)
         return JsonResponse({'status': 200, 'msg': '新增成功'})
     # print(instore_form.errors)
-    return JsonResponse({'status': 500, 'msg': instore_form.errors})
+    return JsonResponse({'status': 500, 'msg': str(instore_form.errors)})
 
 
 # 返回查询数据

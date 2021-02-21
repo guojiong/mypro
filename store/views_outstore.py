@@ -3,7 +3,7 @@ import datetime
 from django.shortcuts import render
 
 from project.models import Project
-from store.forms import OutStoreForm, InStoreForm
+from store.forms import OutStoreForm, BackStoreForm
 from store.models import OutStore, Store
 from django.http.response import JsonResponse
 
@@ -50,7 +50,6 @@ def out_store_query(request):
     reciTeam = request.POST.get('reciTeam')
     searchCondition = dict()
     m_searchCondition = dict()
-    outs = []
     re_data = []
     if out_No:
         searchCondition['outNo'] = out_No
@@ -86,7 +85,7 @@ def out_store_query(request):
 
 
 def outstore_lists(request):
-    store_form = InStoreForm()
+    store_form = BackStoreForm()
     return render(request, 'store/outstore_lists.html', locals())
 
 

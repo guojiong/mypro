@@ -113,13 +113,13 @@
 		</div>
 	</div>
 
-    <div class="modal fade" id="modal-store" >
+    <div class="modal fade" id="back-store" >
 		<div class="modal-dialog" style="width: 78%">
 			<div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				    <span aria-hidden="true">&times;</span></button>
-				  <h4 class="modal-title">编辑</h4>
+				  <h4 class="modal-title">退库</h4>
 				</div>
 				<div class="modal-body">
 					<!-- form start -->
@@ -129,24 +129,20 @@
 							<input type="text" id="storeid" value="{{ store.id }}" hidden>
 							<div class="form-group">
 								<div class="form-group col-lg-4">
-							  		{{ store_form.date|label_with_classes:'col-xs-5 control-label' }}
+							  		{{store_form.date|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.date}}
 								</div>
-								<div class="form-group col-lg-4">
-							  		{{store_form.receiptNo |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.receiptNo}}
-								</div>
                                 <div class="form-group col-lg-4">
-							  		{{store_form.project |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.project}}
+							  		{{store_form.pname |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.pname}}
 								</div>
-
-							</div>
-							<div class="form-group">
                                 <div class="form-group col-lg-4">
 							  		{{ store_form.mtype|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.mtype}}
 								</div>
+
+							</div>
+							<div class="form-group">
 								<div class="form-group col-lg-4">
 							  		{{store_form.mclass |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.mclass}}
@@ -155,13 +151,13 @@
 							  		{{ store_form.mname|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.mname}}
 								</div>
-
-							</div>
-							<div class="form-group">
                                 <div class="form-group col-lg-4">
 							  		{{store_form.specifi |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.specifi}}
 								</div>
+
+							</div>
+							<div class="form-group">
                                 <div class="form-group col-lg-4">
 							  		{{store_form.unit |label_with_classes:'col-lg-5 control-label' }}
 									{{store_form.unit}}
@@ -170,44 +166,20 @@
 							  		{{ store_form.num|label_with_classes:'col-xs-5 control-label' }}
 							 		{{store_form.num}}
 								</div>
-							</div>
-							<div class="form-group">
                                 <div class="form-group col-lg-4">
-							  		{{store_form.materialfee |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.materialfee}}
-								</div>
-								<div class="form-group col-lg-4">
-							  		{{store_form.rate|label_with_classes:'col-xs-5 control-label' }}
-							 		{{store_form.rate}}
-								</div>
-                                <div class="form-group col-lg-4">
-							  		{{ store_form.price|label_with_classes:'col-xs-5 control-label' }}
-							 		{{store_form.price}}
-								</div>
-							</div>
-							<div class="form-group">
-                                <div class="form-group col-lg-4">
-							  		{{store_form.inspector |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.inspector}}
-								</div>
-								<div class="form-group col-lg-4">
-							  		{{store_form.buyer |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.buyer}}
-								</div>
-								<div class="form-group col-lg-4">
-							  		{{store_form.storeloc |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.storeloc}}
+							  		{{store_form.backTeam |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.backTeam}}
 								</div>
 
 							</div>
 							<div class="form-group">
-								<div class="form-group col-lg-4">
-							  		{{store_form.provider |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.provider}}
+                                <div class="form-group col-lg-4">
+							  		{{store_form.backman |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.backman}}
 								</div>
 								<div class="form-group col-lg-4">
-							  		{{store_form.factory |label_with_classes:'col-lg-5 control-label' }}
-									{{store_form.factory}}
+							  		{{store_form.handlers |label_with_classes:'col-lg-5 control-label' }}
+									{{store_form.handlers}}
 								</div>
 								<div class="form-group col-lg-4">
 							  		{{store_form.remark |label_with_classes:'col-lg-5 control-label'}}
@@ -314,7 +286,7 @@
             { data: null, render: function (data) {
                     let outNo = data['outNo']
                     let id = data['id']
-                    return '<button class="btn btn-sm btn-primary" onclick="javascript:back_modal('+ outNo +');">退库</button>&nbsp;&nbsp;' +
+                    return '<button class="btn btn-sm btn-primary" onclick="javascript:back_modal(\''+ outNo +'\');">退库</button>&nbsp;&nbsp;' +
                     '<button class="btn btn-sm btn-primary btn-warning" onclick="javascript:del('+ id +');">删除</button>&nbsp;&nbsp;';
             } },
         ]
@@ -364,41 +336,29 @@
 				if (res.length==0){
 					return
 				}
-				let date = $('div#modal-store input#date')[0];
-                let label_receiptNo = $('div#modal-store label[for="receiptNo"]')[0];
-                let receiptNo = $('div#modal-store input#receiptNo')[0];
-                let mtype = $('div#modal-store select#mtype')[0];
-                let mclass = $('div#modal-store select#mclass')[0];
-                let mname = $('div#modal-store input#mname')[0];
-                let specifi = $('div#modal-store input#specifi')[0];
-                let num = $('div#modal-store input#num')[0];
-                let unit = $('div#modal-store input#unit')[0];
-                let rate = $('div#modal-store input#rate')[0];
-                let factory = $('div#modal-store input#factory')[0];
-                let materialfee = $('div#modal-store input#materialfee')[0];
-                let price = $('div#modal-store input#price')[0];
-                let buyer = $('div#modal-store input#buyer')[0];
-                let inspector = $('div#modal-store input#inspector')[0];
-                let storeloc = $('div#modal-store input#storeloc')[0];
-                let project = $('div#modal-store select#project')[0];
-                let provider = $('div#modal-store input#provider')[0];
-                let remark = $('div#modal-store textarea#remark')[0];
+				let date = $('div#back-store input#date')[0];
+                let pname = $('div#back-store input#pname')[0];
+                let mtype = $('div#back-store input#mtype')[0];
+                let mclass = $('div#back-store input#mclass')[0];
+                let mname = $('div#back-store input#mname')[0];
+                let specifi = $('div#back-store input#specifi')[0];
+                let num = $('div#back-store input#num')[0];
+                let unit = $('div#back-store input#unit')[0];
+                let project = $('div#back-store input#project')[0];
+                let provider = $('div#back-store input#provider')[0];
+                let remark = $('div#back-store textarea#remark')[0];
 
 				date.valueAsDate = new Date();
-				receiptNo.value = res[0].outNo + '-T' + (date.valueAsDate.getMonth() + 1) + date.valueAsDate.getDate();
-				project.value = res[0].store.project.id;
-                label_receiptNo.innerHTML = '退库单号:'
 				mtype.value = res[0].store.mtype;
 				mclass.value = res[0].store.mclass;
 				mname.value = res[0].store.mname;
 				specifi.value = res[0].store.specifi;
-				{#pname.value = res[0]['pname'];#}
+				pname.value = res[0].store.project.name;
 				unit.value = res[0].store.unit;
-				price.value = res[0].price;
 
 			},
 		});
-        $('#modal-store').modal();
+        $('#back-store').modal();
     }
 
     function trim(str){   
@@ -406,6 +366,10 @@
 	}
 
 	$('#q_btn').click(function(){
+        s_table.ajax.reload();
+    });
+
+    $('#savebtn').click(function(){
         s_table.ajax.reload();
     });
 
