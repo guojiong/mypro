@@ -46,7 +46,6 @@ class InStore(models.Model):
     provider = models.CharField(max_length=128, verbose_name='供应商')
     remark = models.TextField(max_length=256, verbose_name='备注', null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    outNo_type = models.CharField(max_length=1, verbose_name='出库单类型')   # 退库:T
     
     def __str__(self):
         return '[%s]_%s_%s_%s_%s_%s' % (self.mname, self.mtype, self.mclass, self.specifi, self.project, self.factory)
@@ -74,6 +73,7 @@ class OutStore(models.Model):
     receiver = models.CharField(max_length=128, verbose_name='领用人')
     remark = models.TextField(max_length=256, verbose_name='备注', null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    outNo_type = models.CharField(max_length=1, verbose_name='出库单类型')  # 退库:T
     
     def __str__(self):
         return '[%s]' % self.outNo
